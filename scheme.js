@@ -1,60 +1,57 @@
 /* Class List */
 var List = function(level, arr, quoted, scope) {
-  /* Private Members */
-  var arr = (arr||null) instanceof Array ? arr : [];
-
-  /* Exposed Members */
+  this._arr = (arr||null) instanceof Array ? arr : [];
   this.level = typeof(level||null) == 'number' ? level : 0;
   this.quoted = quoted || false;
   this.scope = scope;
 
-  /* Private Methods */
-  function copyAndEvalArr() {
-    return List._copyAndEvalArr(arr, scope);
-  };
-
-  /* Priviledged Methods */
-  this.isNull = function() {
-    return (arr.length == 0);
-  };
-
-  this.prepend = function(val) {
-    return arr.unshift(val);
-  };
-
-  this.append = function(val) {
-    return arr.push(val);
-  };
-
-  this.appendList = function(list) {
-    return List._appendList(list, this);
-  };
-
-  this.subList = function(from, to) {
-    return new List(this.level + 1, arr.slice(from, to), quoted);
-  };
-
-  this.getLen = function() {
-    return arr.length;
-  };
-
-  this.toString = function() {
-    return this.isNull() ? '()' : List._toString(arr);
-  };
-
-  this.evaluate = function() {
-    return this.quoted ? this : List._evaluate(copyAndEvalArr(), this);
-  };
-
-  this.itemAt = function(i) {
-    return arr[i];
-  };
-
-  this.objectAt = function(i) {
-    return List._objectAt(arr, i, this.scope);
-  };
-
   return true;
+};
+
+/* Private Methods */
+List.prototype._copyAndEvalArr = function() {
+  return List._copyAndEvalArr(this._arr, this.scope);
+};
+
+/* Priviledged Methods */
+List.prototype.isNull = function() {
+  return (this._arr.length == 0);
+};
+
+List.prototype.prepend = function(val) {
+  return this._arr.unshift(val);
+};
+
+List.prototype.append = function(val) {
+  return this._arr.push(val);
+};
+
+List.prototype.appendList = function(list) {
+  return List._appendList(list, this);
+};
+
+List.prototype.subList = function(from, to) {
+  return new List(this.level + 1, this._arr.slice(from, to), this.quoted);
+};
+
+List.prototype.getLen = function() {
+  return this._arr.length;
+};
+
+List.prototype.toString = function() {
+  return this.isNull() ? '()' : List._toString(this._arr);
+};
+
+List.prototype.evaluate = function() {
+  return this.quoted ? this : List._evaluate(this._copyAndEvalArr(), this);
+};
+
+List.prototype.itemAt = function(i) {
+  return this._arr[i];
+};
+
+List.prototype.objectAt = function(i) {
+  return List._objectAt(this._arr, i, this.scope);
 };
 
 /* Private Methods */
@@ -104,43 +101,40 @@ List._objectAt = function(arr, i, scope) {
 
 /* Class Atom */
 var Atom = function(val, quoted, scope) {
-  /* Private Members */
-  var that = this;
-
-  /* Exposed Members */
+  this._val = val;
   this.quoted = quoted || false;
   this.scope = scope;
 
-  /* Priviledged Methods */
-  this.toString = function() {
-    return val;
-  };
-
-  this.evaluate = function() {
-    return this.quoted ? this : Interpreter._evalAtom(val, this.scope);
-  };
-
   return true;
+};
+
+/* Priviledged Methods */
+Atom.prototype.toString = function() {
+  return this._val;
+};
+
+Atom.prototype.evaluate = function() {
+  return this.quoted ? this : Interpreter._evalAtom(this._val, this.scope);
 };
 
 /* Class Scope */
 var Scope = function() {
-  /* Private Members */
-  var values = {
-  };
-
-  /* Priviledged Methods */
-  this.getValue = function(str) {
-    return values[str];
-  };
-
-  this.setValue = function(str, val) {
-    return Scope._setValue(values, str, val);
+  this._values = {
   };
 
   return true;
 };
 
+/* Priviledged Methods */
+Scope.prototype.getValue = function(str) {
+  return this._values[str];
+};
+
+Scope.prototype.setValue = function(str, val) {
+  return Scope._setValue(this._values, str, val);
+};
+
+/* Static Methods */
 Scope._setValue = function(values, str, val) {
   switch( true ) {
     case val instanceof Atom:
@@ -392,7 +386,7 @@ var Interpreter = {
     'append': FunctionCompiler.compileFunction(2, function(l1, l2) {
         return l1.appendList(l2);
       }),
-  
+
     'apply': FunctionCompiler.compileFunction(-1, function(list) {
 	var last = list.getLen() - 1;
 	var argList = list.subList(1, last);
@@ -428,14 +422,14 @@ var Interpreter = {
 	    return (l.evaluate() == r.evaluate());
 	}
       }),
-    
+
     'null?': FunctionCompiler.compileFunction(1, function(obj) {
 	if( obj instanceof List ) {
 	  return obj.isNull();
 	}
 	return false;
       }),
-    
+
     'number?': FunctionCompiler.compileFunction(1, function(obj) {
 	obj = obj.evaluate();
 	return (typeof(obj) == 'number');
