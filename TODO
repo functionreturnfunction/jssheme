@@ -1,0 +1,33 @@
+* More special forms
+  - case
+  - (define _form_ _expr_)
+  - lambda
+
+* More primitives
+  - boolean?
+  - char?
+  - display
+  - list
+  - pair?
+    - probably need to implement pairs
+
+  - procedure?
+  - sin
+  - sqrt
+  - string?
+  - symbol?
+  - vector?
+
+* Create preparser
+   - needs to merge & convert whitespace
+
+* Learn and implement associative lists
+
+* Learn and implement list mapping
+
+* Interpreter needs to be further separated from the environment
+  - need a reset function to clear all user defined values AND/OR
+  - need to make an instantiatable class out of it
+
+  - will need to be able to dump and load state (JSON?)
+

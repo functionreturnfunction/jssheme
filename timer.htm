@@ -1,0 +1,51 @@
+<html>
+<head>
+<script type=text/javascript language=javascript>
+function $(id) { return document.getElementById(id); }
+
+function Timer() {
+  var that=this;
+  var timerID;
+
+  this.count = 0;
+  this.running = false;
+
+  function update() {
+    that.count++;
+  }
+
+  this.start = function() {
+    this.running = true;
+    timerID = window.setInterval(update, 100);
+  };
+
+  this.stop = function() {
+    this.running = false;
+    window.clearInterval(timerID);
+    timerID = null;
+  };
+
+  this.clear = function() {
+    this.count = 0;
+  };
+
+  return true;
+}
+
+var tmr = new Timer();
+function startTimer() {
+  tmr.start();
+}
+function stopTimer() {
+  tmr.stop();
+  $('foo').innerHTML = tmr.count;
+  tmr.clear();
+}
+</script>
+</head>
+<body>
+<div id=foo></div>
+<input type=button value=Start onclick="startTimer()">
+<input type=button value=Stop onclick="stopTimer()">
+</body>
+</html>
