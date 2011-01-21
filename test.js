@@ -34,35 +34,35 @@ TestSuite.prototype.getReport = function() {
 };
 
 TestSuite.prototype.runAllTests = (function(global) {
-    return function() {
-      this.start = new Date();
-      TestSuite.tester = this;
-      var cur;
-      for( var x in global ) {
-	switch( true ) {
-	  case this._halt:
-	    this.end = new Date();
-	    return false;
-	  case /Test$/.test(x):
-	    cur = new global[x]();
-            for( var y in cur ) {
-	      switch( true ) {
-		case this._halt:
-		  this.end = new Date();
-		  return false;
-		case /^test/.test(y):
-		  this.currentTest = y;
-		  this.runTest(cur[y]);
-		  break;
-	      }
-	    }
-	    break;
-	}
+  return function() {
+    this.start = new Date();
+    TestSuite.tester = this;
+    var cur;
+    for( var x in global ) {
+      switch( true ) {
+        case this._halt:
+          this.end = new Date();
+          return false;
+        case /Test$/.test(x):
+          cur = new global[x]();
+          for( var y in cur ) {
+            switch( true ) {
+              case this._halt:
+                this.end = new Date();
+                return false;
+              case /^test/.test(y):
+                this.currentTest = y;
+                this.runTest(cur[y]);
+                break;
+            }
+          }
+          break;
       }
-      this.end = new Date();
-      return true;
     }
-  })(this);
+    this.end = new Date();
+    return true;
+  }
+})(this);
 
 TestSuite.tester = null;
 
@@ -71,8 +71,8 @@ TestSuite.assert = {
     TestSuite.tester.assertc++;
     if( obj != null ) {
       TestSuite.tester._recordFailure('Expected null, got ' +
-				      obj.toString() + '\n' +
-				      (msg || ''));
+                                      obj.toString() + '\n' +
+                                      (msg || ''));
       return false;
     }
     return true;
@@ -82,7 +82,7 @@ TestSuite.assert = {
     TestSuite.tester.assertc++;
     if( obj != null ) {
       TestSuite.tester._recordFailure('Got null when not ' +
-				      'expected\n' + (msg || ''));
+                                      'expected\n' + (msg || ''));
       return false;
     }
     return true;
@@ -92,8 +92,8 @@ TestSuite.assert = {
     TestSuite.tester.assertc++;
     if( obj1 != obj2 ) {
       TestSuite.tester._recordFailure('Expected ' + obj1.toString() +
-				      'got ' + (obj2 || 'null').toString() +
-				      '\n' + (msg || ''));
+                                      'got ' + (obj2 || 'null').toString() +
+                                      '\n' + (msg || ''));
       return false;
     }
     return true;
@@ -103,7 +103,7 @@ TestSuite.assert = {
     TestSuite.tester.assertc++;
     if( obj1 == obj2 ) {
       TestSuite.tester._recordFailure('Value ' + obj1.toString() +
-				      'found when not expected\n' + (msg || ''));
+                                      'found when not expected\n' + (msg || ''));
       return false;
     }
     return true;
@@ -113,7 +113,7 @@ TestSuite.assert = {
     TestSuite.tester.assertc++;
     if( obj != true ) {
       TestSuite.tester._recordFailure('False condition encountered when not ' +
-				      'expected\n' + (msg || ''));
+                                      'expected\n' + (msg || ''));
       return false;
     }
     return true;
@@ -123,7 +123,7 @@ TestSuite.assert = {
     TestSuite.tester.assertc++;
     if( obj != false ) {
       TestSuite.tester._recordFailure('True condition encountered when not ' +
-				      'expected\n' + (msg || ''));
+                                      'expected\n' + (msg || ''));
       return false;
     }
     return true;
