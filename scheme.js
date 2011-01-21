@@ -119,8 +119,7 @@ Atom.prototype.evaluate = function() {
 
 /* Class Scope */
 var Scope = function() {
-  this._values = {
-  };
+  this._values = {};
 
   return true;
 };
@@ -139,12 +138,12 @@ Scope._setValue = function(values, str, val) {
   switch( true ) {
     case val instanceof Atom:
     case val instanceof List:
-    if( val.quoted ) {
-      values[str] = val.evaluate();
-      break;
-    }
+      if( val.quoted ) {
+        values[str] = val.evaluate();
+        break;
+      }
     default:
-    values[str] = val;
+      values[str] = val;
   }
   return str;
 };
@@ -171,13 +170,13 @@ FunctionCompiler.prototype.compile = function() {
   switch( this.argc ) {
     case -1:
     case 0:
-    return this.fn;
+      return this.fn;
     case 1:
     case 2:
     case 3:
-    return FunctionCompiler['_compile' + this.argc.toString()](this.fn);
+      return FunctionCompiler['_compile' + this.argc.toString()](this.fn);
     default:
-    return eval(this.getCode());
+      return eval(this.getCode());
   }
 };
 
@@ -298,9 +297,9 @@ var Interpreter = {
     'if': function(list) {
       switch( true ) {
         case list.objectAt(1).evaluate():
-        return list.objectAt(2).evaluate();
+          return list.objectAt(2).evaluate();
         case list.getLen() == 4:
-        return list.objectAt(3).evaluate();
+          return list.objectAt(3).evaluate();
       }
     },
 
@@ -310,18 +309,18 @@ var Interpreter = {
       list = list.subList(2, list.getLen());
       var cur;
       for( var i = 0, len = bindings.getLen(); i < len; ++i ) {
-	cur = bindings.objectAt(i);
-	scope.setValue(cur.objectAt(0),
-		       cur.objectAt(1).evaluate());
+        cur = bindings.objectAt(i);
+        scope.setValue(cur.objectAt(0),
+                       cur.objectAt(1).evaluate());
       }
       for( var i = 0, len = list.getLen(); i < len; ++i ) {
-	cur = list.objectAt(i);
-	cur.scope = scope;
-	if( i == (len - 1) ) {
-	  return cur.evaluate();
-	} else {
-	  cur.evaluate();
-	}
+        cur = list.objectAt(i);
+        cur.scope = scope;
+        if( i == (len - 1) ) {
+          return cur.evaluate();
+        } else {
+          cur.evaluate();
+        }
       }
     },
 
@@ -331,20 +330,20 @@ var Interpreter = {
       list = list.subList(2, list.getLen());
       var cur, curVal;
       for( var i = 0, len = bindings.getLen(); i < len; ++i ) {
-	cur = bindings.objectAt(i);
-	curVal = cur.objectAt(1);
-	curVal.scope = scope;
-	scope.setValue(cur.objectAt(0),
-		       curVal.evaluate());
+        cur = bindings.objectAt(i);
+        curVal = cur.objectAt(1);
+        curVal.scope = scope;
+        scope.setValue(cur.objectAt(0),
+                       curVal.evaluate());
       }
       for( var i = 0, len = list.getLen(); i < len; ++i ) {
-	cur = list.objectAt(i);
-	cur.scope = scope;
-	if( i == (len - 1) ) {
-	  return cur.evaluate();
-	} else {
-	  cur.evaluate();
-	}
+        cur = list.objectAt(i);
+        cur.scope = scope;
+        if( i == (len - 1) ) {
+          return cur.evaluate();
+        } else {
+          cur.evaluate();
+        }
       }
     },
 
@@ -384,56 +383,56 @@ var Interpreter = {
   /* Defined Primitives */
   primitives: {
     'append': FunctionCompiler.compileFunction(2, function(l1, l2) {
-        return l1.appendList(l2);
-      }),
+      return l1.appendList(l2);
+    }),
 
     'apply': FunctionCompiler.compileFunction(-1, function(list) {
-	var last = list.getLen() - 1;
-	var argList = list.subList(1, last);
-	list = list.objectAt(last);
-	list.quoted = false;
-	list = argList.appendList(list);
-	return list.evaluate();
-      }),
+      var last = list.getLen() - 1;
+      var argList = list.subList(1, last);
+      list = list.objectAt(last);
+      list.quoted = false;
+      list = argList.appendList(list);
+      return list.evaluate();
+    }),
 
     'car': FunctionCompiler.compileFunction(1, function(list) {
-	return list.objectAt(0);
-      }),
+      return list.objectAt(0);
+    }),
 
     'cdr': FunctionCompiler.compileFunction(1, function(list) {
-	return list.subList(1, list.getLen());
-      }),
+      return list.subList(1, list.getLen());
+    }),
 
     'cons': FunctionCompiler.compileFunction(2, function(a, list) {
-	list.prepend(a);
-	return list;
-      }),
+      list.prepend(a);
+      return list;
+    }),
 
     'eq?': FunctionCompiler.compileFunction(2, function(l, r) {
-	switch( true ) {
-	  case l instanceof List:
-	    if( r instanceof List ) {
-	      return (l.isNull() && r.isNull()) ||
-		(l === r);
-	    } else {
-	      return false;
-	    }
-	  default:
-	    return (l.evaluate() == r.evaluate());
-	}
-      }),
+      switch( true ) {
+        case l instanceof List:
+          if( r instanceof List ) {
+            return (l.isNull() && r.isNull()) ||
+              (l === r);
+          } else {
+            return false;
+          }
+        default:
+          return (l.evaluate() == r.evaluate());
+      }
+    }),
 
     'null?': FunctionCompiler.compileFunction(1, function(obj) {
-	if( obj instanceof List ) {
-	  return obj.isNull();
-	}
-	return false;
-      }),
+      if( obj instanceof List ) {
+        return obj.isNull();
+      }
+      return false;
+    }),
 
     'number?': FunctionCompiler.compileFunction(1, function(obj) {
-	obj = obj.evaluate();
-	return (typeof(obj) == 'number');
-      }),
+      obj = obj.evaluate();
+      return (typeof(obj) == 'number');
+    }),
   },
 
   /* Class Methods */
@@ -461,10 +460,10 @@ var Interpreter = {
     switch( true ) {
       case (val instanceof List && val.quoted):
       case (val == undefined):
-      Interpreter.userVals[str] = val;
-      break;
+        Interpreter.userVals[str] = val;
+        break;
       default:
-      Interpreter.userVals[str] = val.evaluate();
+        Interpreter.userVals[str] = val.evaluate();
     }
     return str;
   },
@@ -492,10 +491,10 @@ var Interpreter = {
   _getMathFunction: function(str) {
     var fn = Interpreter.mathFuncs[str];
     return (typeof(fn) != 'function') ? fn : (function(fn) {
-        return function(list) {
-          return Interpreter._doMath(fn, list);
-        };
-      })(fn);
+      return function(list) {
+        return Interpreter._doMath(fn, list);
+      };
+    })(fn);
   },
 
   _getLiteral: function(str) {
@@ -601,7 +600,6 @@ var Interpreter = {
                 curChar == chars.closeParens ) {
               break;
             }
-
           }
           break;
       }
