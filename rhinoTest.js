@@ -38,7 +38,6 @@ String.prototype.inspect = function() {
 
 load('scheme.js');
 load('qunitRhino.js');
-load('qunitSchemeTest.js');
+load('schemeTest.js');
 
-QUnit.verbose = true;
 new QUnit.ConsolePrinter().print();

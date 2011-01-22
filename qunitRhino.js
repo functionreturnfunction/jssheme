@@ -20,6 +20,14 @@ var QUnit = {
     this.verbose = QUnit.verbose;
     this.modules = QUnit.modules;
   },
+  HtmlPrinter: function(element) {
+    this.element = element;
+    this.verbose = QUnit.verbose;
+    this.modules = QUnit.modules;
+    print = function(str) {
+      element.innerHTML += str + '\n';
+    };
+  },
 
   currentModule: null,
   modules: [],
@@ -109,6 +117,8 @@ QUnit.ConsolePrinter.prototype.print = function() {
         ' successful, ' + totalFailures + ' failed, ' + totalExceptions +
         ' exception' + (exceptions == 1 ? '' : 's') + '.\n');
 };
+
+QUnit.HtmlPrinter.prototype.print = QUnit.ConsolePrinter.prototype.print;
 
 function module(name) {
   var module = new QUnit.Module(name);

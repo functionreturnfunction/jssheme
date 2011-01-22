@@ -1,262 +1,293 @@
-function ListTest() {
-  var Assert = TestSuite.assert;
-  var p = Interpreter.parse;
+var p = Interpreter.parse;
 
-  this.testNewList = function() {
-    var list = new List();
-    Assert.isEqual(0, list.level, 'List created with no arguments should always have a level of 0.');
-    Assert.isTrue(list.isNull(), 'List created with no arguments should always be null.');
-    Assert.isEqual('()', list.toString(), 'List.toString() seems to be broken.');
+function doesThrow(fn, message) {
+  var thrown = false;
 
-    list = new List(1, ['+', 1, 1]);
-    Assert.isEqual(1, list.level, 'Setting List level from constructor seems to be broken.');
-    Assert.isFalse(list.isNull(), 'Generating List with array as argument seems to be broken.');
-    Assert.isEqual('(+ 1 1)', list.toString(), 'List.toString() seems to be broken.');
-    Assert.isEqual(2, list.evaluate(), 'General failure to evaluate.');
+  try {
+    fn();
+  } catch(e) {
+    thrown = true;
+  }
 
-    list = new List(1, [1, 2, 3, 4], true);
-    Assert.isTrue(list.quoted, 'Error creating new quoted list.');
-    Assert.isEqual('(1 2 3 4)', list.toString(), 'Error with qouted list .toString().');
-    Assert.isEqual(list, list.evaluate(), 'Evaluating a quoted list should return a reference to itself (I think).');
-    var list2 = p('\'(1 2 3 4)');
-    Assert.isTrue(list.quoted, 'Error creating new quoted list using the interpreter.');
-    Assert.isEqual(list.toString(), list2.toString(), 'Error generating quoted list using the interpreter.');
-    return true;
-  };
-
-  return true;
+  ok(thrown, message);
 }
 
-function SchemeTest() {
-  var p = Interpreter.parse;
-  var Assert = TestSuite.assert;
+function doesNotThrow(fn, message) {
+  var thrown = false;
 
-  /* Test Primitives */
+  try {
+    fn();
+  } catch(e) {
+    thrown = true;
+  }
 
-  this.testAppend = function() {
-    Assert.isEqual('(foo bar)', p('(append \'(foo) \'(bar))'), 'Basic append broken.');
-    Assert.isEqual('(1 2 3 4 5 6)', p('(append \'(1 2 3) \'(4 5 6))'), 'Append appears broken.')
-    return true;
-  };
+  ok(!thrown, message);
+}
 
-  this.testApply = function() {
-    Assert.isEqual(3, p('(apply + \'(1 1 1))'), 'Basic apply function call broken.');
-    Assert.isEqual(3, p('(apply + 1 1 1 \'())'), 'Apply with extra arguments besides list and function broken.');
-    Assert.isEqual('(foo bar)', p('(apply cons \'foo \'((bar)))'), 'Apply using cons broken.');
-    return true;
-  };
+module('List');
 
-  this.testArithmetic = function() {
-    Assert.isEqual(10, p('(+ 1 2 3 4)'), 'Addition is broken');
-    Assert.isEqual(15, p('(- 100 50 25 10)'), 'Subtraction is broken');
-    Assert.isEqual(24, p('(* 1 2 3 4)'), 'Multiplication is broken');
-    Assert.isEqual(1, p('(/ 64 8 4 2)'), 'Division is broken');
-    return true;
-  };
+test('Empty list should be created with proper values', function() {
+  var list = new List();
+  equals(0, list.level, 'List created with no arguments should always have a level of 0.');
+  ok(list.isNull(), 'List created with no arguments should always be null.');
+  equals('()', list.toString(), 'List.toString() seems to be broken.');
+});
 
-  this.testCar = function() {
-    Assert.isEqual(1, p('(car \'(1 2 3))'), 'Basic car broken.');
-    Assert.isEqual('(foo)', p('(car \'((foo) (bar) (baz)))'), 'Car on list of lists broken.');
-    return true;
-  };
+test('Unquoted list should evaluate properly', function() {
+  var list = new List(1, ['+', 1, 1]);
+  equals(1, list.level, 'Setting List level from constructor seems to be broken.');
+  ok(!list.isNull(), 'Generating List with array as argument seems to be broken.');
+  equals('(+ 1 1)', list.toString(), 'List.toString() seems to be broken.');
+  equals(2, list.evaluate(), 'General failure to evaluate.');
+});
 
-  this.testCdr = function() {
-    Assert.isEqual('(2 3)', p('(cdr \'(1 2 3))'), 'Basic cdr broken.');
-    Assert.isEqual('((bar) (baz))', p('(cdr \'((foo) (bar) (baz)))'), 'Cdr on list of lists broken.');
-    return true;
-  };
+test('Quoted list should evaluate to itself', function() {
+  var list = new List(1, [1, 2, 3, 4], true),
+  list2 = p('\'(1 2 3 4)');
+  
+  ok(list.quoted, 'Error creating new quoted list.');
+  equals('(1 2 3 4)', list.toString(), 'Error with qouted list .toString().');
+  equals(list, list.evaluate(), 'Evaluating a quoted list should return a reference to itself (I think).');
+  ok(list2.quoted, 'Error creating new quoted list using the interpreter.');
+  equals(list.toString(), list2.toString(), 'Error generating quoted list using the interpreter.');
+});
 
-  this.testCons = function() {
-    Assert.isEqual('(foobar)', p('(cons \'foobar \'())'), 'Consing onto empty list is broken.');
-    Assert.isEqual('(foo bar)', p('(cons \'foo \'(bar))'), 'Consing onto non-empty list is broken.');
-    return true;
-  };
+module('Scheme Primitives');
 
-  this.testEquals = function() {
-    // MIT Scheme reports false on this:
-    Assert.isTrue(p('(eq? "foo" "foo")'), 'Equality function is broken');
-    Assert.isFalse(p('(eq? "foo" "bar")'), 'Equality function is broken');
-    Assert.isTrue(p('(eq? 1 1)'), 'Equality function is broken');
-    return true;
-  };
+test('`append\' should join two lists', function () {
+  equals('(foo bar)',
+         p('(append \'(foo) \'(bar))'), 'Basic append broken.');
+  equals('(1 2 3 4 5 6)',
+         p('(append \'(1 2 3) \'(4 5 6))'), 'Append appears broken.');
+});
 
-  this.testNull = function() {
-    Assert.isTrue(p('(null? \'())'), 'Null check function or null list seems to be broken.');
-    Assert.isFalse(p('(null? \'(1))'), 'Null check function failed.');
-    Assert.isFalse(p('(null? \'(1 2 3 4))'), 'Null check function or quote functionality seems to be broken.');
-    Assert.isFalse(p('(null? 1)'), 'Null check function failed, numbers are NOT equal to the null list.');
-    Assert.isFalse(p('(null? (+ 1 2))'), 'Null check function failed.');
-    return true;
-  };
+test('`apply\' should apply cdr of argument list to car of argument list', function() {
+  equals('(foo bar)',
+         p('(append \'(foo) \'(bar))'), 'Basic append broken.');
+  equals('(1 2 3 4 5 6)',
+         p('(append \'(1 2 3) \'(4 5 6))'), 'Append appears broken.');
+});
 
-  this.testNumber = function() {
-    Assert.isTrue(p('(number? 1)'), 'Number type-check function failed.');
-    Assert.isTrue(p('(number? (+ 1 2))'), 'Number type-check function failed.');
-    Assert.isFalse(p('(number? +)'), 'Number type-check function failed.');
-    return true;
-  };
+test('Basic arithmetic operations', function() {
+  equals(10, p('(+ 1 2 3 4)'), 'Addition is broken');
+  equals(15, p('(- 100 50 25 10)'), 'Subtraction is broken');
+  equals(24, p('(* 1 2 3 4)'), 'Multiplication is broken');
+  equals(1, p('(/ 64 8 4 2)'), 'Division is broken');
+});
 
-  /* Test Constants */
+test('`car\' should return the first element of a list', function() {
+  equals(1,
+         p('(car \'(1 2 3))'), 'Basic car broken.');
+  equals('(foo)',
+         p('(car \'((foo) (bar) (baz)))'), 'Car on list of lists broken.');
+});
 
-  this.testConstants = function() {
-    Assert.isTrue(p('#t'), 'True constant is broken.');
-    Assert.isFalse(p('#f'), 'False constant is broken.');
-  };
+test('`cdr\' should return everything but the first element of a list as a new list', function() {
+  equals('(2 3)',
+         p('(cdr \'(1 2 3))'), 'Basic cdr broken.');
+  equals('((bar) (baz))',
+         p('(cdr \'((foo) (bar) (baz)))'), 'Cdr on list of lists broken.');
+});
 
-  /* Test Special Forms */
+test('`cons\' prepends items onto lists', function() {
+  equals('(foobar)',
+         p('(cons \'foobar \'())'), 'Consing onto empty list is broken.');
+  equals('(foo bar)',
+         p('(cons \'foo \'(bar))'), 'Consing onto non-empty list is broken.');
+});
 
-  this.testAnd = function() {
-    Assert.isTrue(p('(and #t #t)'), 'Basic and form broken.');
-    Assert.isFalse(p('(and #t #f)'), 'Basic and form broken.');
-    Assert.isFalse(p('(and #t #t #t #f #t)'), 'Multi-argument and form broken.');
-    return true;
-  };
+test('`eq?\' returns true if arguments are equal, else false', function() {
+  // MIT Scheme reports false on this:
+  ok(p('(eq? "foo" "foo")'), 'Equality function is broken');
+  ok(!p('(eq? "foo" "bar")'), 'Equality function is broken');
+  ok(p('(eq? 1 1)'), 'Equality function is broken');
+  // TODO: this needs to work
+  //  ok(p('(eq? \'foo \'foo)'), 'Equality function is broken')
+});
 
-  this.testBegin = function() {
-    Assert.isEqual(7, p('(begin (+ 1 2) (+ 2 3) (+ 3 4))'), 'Basic begin call failed.');
-    p('(define begin-tester 1)');
-    Assert.isEqual(2, p('(begin (set! begin-tester 2) begin-tester)'), 'Begin function broken.');
-    Assert.isEqual('begin-tester',
-		   p('(begin (set! begin-tester (+ begin-tester 1)) (set! begin-tester (+ begin-tester 1)))'),
-		   'Begin funciton broken.');
-    Assert.isEqual(4, p('begin-tester'), 'Begin function broken.');
-    return true;
-  };
+test('`null?\' returns true if argument is the null list, else false', function() {
+  ok(p('(null? \'())'), 'Null check function or null list seems to be broken.');
+  ok(!p('(null? \'(1))'), 'Null check function failed.');
+  ok(!p('(null? \'(1 2 3 4))'),
+     'Null check function or quote functionality seems to be broken.');
+  ok(!p('(null? 1)'),
+     'Null check function failed, numbers are NOT equal to the null list.');
+  ok(!p('(null? (+ 1 2))'),
+     'Null check function failed.');
+});
 
-  this.testCase = function() {
-    Assert.isEqual('foo', p('(case 1 ((1 1 1 1) \'foo) ((2 2 2 2) \'bar))'), 'Basic case call failed.');
-    Assert.isEqual('bar', p('(case 2 ((1 1 1 1) \'foo) ((2 2 2 2) \'bar))'), 'Basic case call failed.');
-    Assert.isEqual('foobar', p('(case 3 ((1 1 1 1) \'foo) ((2 2 2 2) \'bar) (else \'foobar))'),
-		   'Else condition failed in case call.');
-    return true;
-  };
+test('`number?\' return true if argument is a number, else false', function() {
+  ok(p('(number? 1)'), 'Number type-check function failed.');
+  ok(p('(number? (+ 1 2))'), 'Number type-check function failed.');
+  ok(!p('(number? +)'), 'Number type-check function failed.');
+});
 
-  this.testCond = function() {
-    Assert.isEqual('foo', p('(cond (#t \'foo))'), 'Basic cond form broken.');
-    Assert.isEqual('bar', p('(cond (#f \'foo) (#t \'bar))'), 'Two level cond form broken.');
-    Assert.isEqual('baz', p('(cond (#f \'foo) (#f \'bar) (else \'baz))'), 'Else in cond form broken.');
-    Assert.isEqual(undefined, p('(cond (#f \'foo))'), 'Cond form with no positive termination and no else' +
-                   ' should return undefined.');
-    return true;
-  };
+module('Scheme Constants');
 
-  this.testDefine = function() {
-    Assert.isEqual('define-tester', p('(define define-tester 1)'), 'The define form should always return the name of the new value.');
-    Assert.isEqual(1, p('define-tester'), 'The define form seems to be broken.');
-    return true;
-  };
+test('Truth constants', function() {
+  ok(p('#t'), 'True constant is broken.');
+  ok(!p('#f'), 'False constant is broken.');
+});
 
-  this.testIf = function() {
-    Assert.isEqual('foo', p('(if #t \'foo)'), 'Basic if form broken.');
-    Assert.isEqual('bar', p('(if #f \'foo \'bar)'), 'Two option if from broken');
-    Assert.isEqual(undefined, p('(if #f \'foo)'), 'If form with false first statement' +
-                   ' and no 3rd argument should return undefined.');
-    return true;
-  };
+module('Scheme Special Forms');
 
-  this.testLet = function() {
-    Assert.isEqual(3, p('(let ((x 2)) (+ 1 x))'), 'Basic let call failed.');
-    Assert.isEqual('baz', p('(let ((foo \'bar) (foobar \'baz)) (+ 1 2) (+ (+ 1 1) 1) foobar)'), 'Let form failed.');
-    Assert.doesThrow(function(){p('foobar')}, 'Let form has leaked, or the variable foobar has been set by a test');
-    Assert.doesThrow(function(){p('(let ((foo 1) (bar (+ 1 foo))) (+ foo bar))')},
-		     'Regular let form should not allow use of bindings created during its own evaluation.');
-    
-  };
+test('`and\' returns true if all arguments evaluate to true, else false', function() {
+  ok(p('(and #t #t)'), 'Basic and form broken.');
+  ok(!p('(and #t #f)'), 'Basic and form broken.');
+  ok(!p('(and #t #t #t #f #t)'), 'Multi-argument and form broken.');
+});
 
-  this.testLetStar = function() {
-    Assert.isEqual(3, p('(let* ((x 2)) (+ 1 x))'), 'Basic let call failed.');
-    Assert.isEqual('baz', p('(let* ((foo \'bar) (foobar \'baz)) (+ 1 2) (+ (+ 1 1) 1) foobar)'), 'Let form failed.');
-    Assert.doesThrow(function(){p('foobar')}, 'Let form has leaked, or the variable foobar has been set by a test');
-    Assert.doesNotThrow(function(){p('(let* ((foo 1) (bar (+ 1 foo))) (+ foo bar))')},
-		     'Starred let form should allow use of bindings created during its own evaluation.');
-    Assert.isEqual(3, p('(let* ((foo 1) (bar (+ 1 foo))) (+ foo bar))'), 'Let* call failed.');
-    return true;
-  };
+test('`begin\' evaluates all of its arguments, returning the value from the last', function() {
+  equals(7, p('(begin (+ 1 2) (+ 2 3) (+ 3 4))'), 'Basic begin call failed.');
+  p('(define begin-tester 1)');
+  equals(2, p('(begin (set! begin-tester 2) begin-tester)'), 'Begin function broken.');
+  equals('begin-tester',
+		     p('(begin (set! begin-tester (+ begin-tester 1)) (set! begin-tester (+ begin-tester 1)))'),
+		     'Begin funciton broken.');
+  equals(4, p('begin-tester'), 'Begin function broken.');
+});
 
-  this.testOr = function() {
-    Assert.isTrue(p('(or #t #f)'), 'Basic or form broken.');
-    Assert.isFalse(p('(or #f #f)'), 'Basic or form broken.');
-    Assert.isTrue(p('(or #f #f #f #t #f)'), 'Multi-argument or form broken.');
-    return true;
-  };
+test('`case\' is really hard to define in a short string, but it should work', function() {
+  equals('foo',
+         p('(case 1 ((1 1 1 1) \'foo) ((2 2 2 2) \'bar))'),
+           'Basic case call failed.');
+  equals('bar',
+         p('(case 2 ((1 1 1 1) \'foo) ((2 2 2 2) \'bar))'),
+           'Basic case call failed.');
+  equals('foobar',
+         p('(case 3 ((1 1 1 1) \'foo) ((2 2 2 2) \'bar) (else \'foobar))'),
+		       'Else condition failed in case call.');
+});
 
-  this.testQuote = function() {
-    Assert.isEqual('(1 2 3)', p('(quote (1 2 3))'), 'Basic quote form broken.');
-    Assert.isEqual('((foo) bar)', p('(quote ((foo) bar))'), 'Two level quote failed.');
-    Assert.isEqual('(((foo) bar) (baz))', p('(quote (((foo) bar) (baz)))'), 'Multi level quote failed.');
-    return true;
-  };
+test('`cond\' should work as expected', function() {
+  equals('foo',
+         p('(cond (#t \'foo))'), 'Basic cond form broken.');
+  equals('bar',
+         p('(cond (#f \'foo) (#t \'bar))'), 'Two level cond form broken.');
+  equals('baz',
+         p('(cond (#f \'foo) (#f \'bar) (else \'baz))'),
+         'Else in cond form broken.');
+  equals(undefined,
+         p('(cond (#f \'foo))'),
+         'Cond form with no positive termination and no else' +
+         ' should return undefined.');
+});
 
-  this.testSet = function() {
-    p('(define set-tester 1)');
-    Assert.isEqual(1, p('set-tester'), 'Define form seems to have failed.');
-    Assert.isEqual('set-tester', p('(set! set-tester 2)'), 'Set! form should return the name of the variable it set.');
-    Assert.isEqual(2, p('set-tester'), 'Set! form is broken.');
-    return true;
-  };
+test('`define\' should define new variables', function() {
+  equals('define-tester',
+         p('(define define-tester 1)'),
+         'The define form should always return the name of the new value.');
+  equals(1, p('define-tester'), 'The define form seems to be broken.');
+});
 
-  /* Test Interpreter Functionality */
+test('`if\' should return its second argument if the first is true, else its third', function() {
+  equals('foo', p('(if #t \'foo)'), 'Basic if form broken.');
+  equals('bar', p('(if #f \'foo \'bar)'), 'Two option if from broken');
+  equals(undefined, p('(if #f \'foo)'), 'If form with false first statement' +
+         ' and no 3rd argument should return undefined.');
+});
 
-  this.testSpecialChars = function() {
-    Assert.isEqual('(foo bar)', p('\'(foo bar)').toString(), 'Error reading quoted list');
-    Assert.isEqual('foobar', p('\'foobar').toString(), 'Error reading quoted s-expression');
-    return true;
-  };
+test('`let\' should define local variables', function() {
+  equals(3, p('(let ((x 2)) (+ 1 x))'), 'Basic let call failed.');
+  equals('baz', p('(let ((foo \'bar) (foobar \'baz)) (+ 1 2) (+ (+ 1 1) 1) foobar)'), 'Let form failed.');
+  doesThrow(function(){p('foobar')}, 'Let form has leaked, or the variable foobar has been set by a test');
+  doesThrow(function(){p('(let ((foo 1) (bar (+ 1 foo))) (+ foo bar))')},
+		                 'Regular let form should not allow use of bindings created during its own evaluation.');
+});
 
-  this.testNesting = function() {
-    Assert.isEqual(6, p('(+ 1 1 1 1 1 1)'), 'Control is broken');
+test('`let*\' should define local variables in terms of other local variables', function() {
+  equals(3, p('(let* ((x 2)) (+ 1 x))'), 'Basic let call failed.');
+  equals('baz',
+         p('(let* ((foo \'bar) (foobar \'baz)) (+ 1 2) (+ (+ 1 1) 1) foobar)'),
+         'Let form failed.');
+  doesThrow(function(){p('foobar')},
+            'Let form has leaked, or the variable foobar has been set by a test');
+  doesNotThrow(function(){p('(let* ((foo 1) (bar (+ 1 foo))) (+ foo bar))')},
+		           'Starred let form should allow use of bindings created during its own evaluation.');
+  equals(3, p('(let* ((foo 1) (bar (+ 1 foo))) (+ foo bar))'), 'Let* call failed.');
+});
 
-    Assert.isEqual(6, p('(+ 1 (+ 1 1 1 1 1))'), 'Nesting is broken.');
-    Assert.isEqual(6, p('(+ 1 1 (+ 1 1 1 1))'), 'Nesting is broken.');
-    Assert.isEqual(6, p('(+ 1 1 1 (+ 1 1 1))'), 'Nesting is broken.');
-    Assert.isEqual(6, p('(+ 1 1 1 1 (+ 1 1))'), 'Nesting is broken.');
-    Assert.isEqual(6, p('(+ 1 (+ 1 1 1 (+ 1 1)))'), 'Nesting is broken.');
-    Assert.isEqual(6, p('(+ 1 1 (+ 1 1 (+ 1 1)))'), 'Nesting is broken.');
-    Assert.isEqual(6, p('(+ 1 1 1 (+ 1 (+ 1 1)))'), 'Nesting is broken.');
-    Assert.isEqual(6, p('(+ 1 (+ 1 1 (+ 1 (+ 1 1))))'), 'Nesting is broken.');
-    Assert.isEqual(6, p('(+ 1 1 (+ 1 (+ 1 (+ 1 1))))'), 'Nesting is broken.');
-    Assert.isEqual(6, p('(+ 1 (+ 1 (+ 1 (+ 1 (+ 1 1)))))', 'Tail nesting broken'));
+test('`or\' should return true if any of its arguments evaluates to true, else false', function() {
+  ok(p('(or #t #f)'), 'Basic or form broken.');
+  ok(!p('(or #f #f)'), 'Basic or form broken.');
+  ok(p('(or #f #f #f #t #f)'), 'Multi-argument or form broken.');
+});
 
-    Assert.isEqual(6, p('(+ (+ 1 1 1 1 1) 1)'), 'Nesting is broken.');
-    Assert.isEqual(6, p('(+ (+ 1 1 1 1) 1 1)'), 'Nesting is broken.');
-    Assert.isEqual(6, p('(+ (+ 1 1 1) 1 1 1)'), 'Nesting is broken.');
-    Assert.isEqual(6, p('(+ (+ 1 1) 1 1 1 1)'), 'Nesting is broken.');
-    Assert.isEqual(6, p('(+ (+ (+ 1 1) 1 1 1) 1)'), 'Nesting is broken.');
-    Assert.isEqual(6, p('(+ (+ (+ 1 1) 1 1) 1 1)'), 'Nesting is broken.');
-    Assert.isEqual(6, p('(+ (+ (+ 1 1) 1) 1 1 1)'), 'Nesting is broken.');
-    Assert.isEqual(6, p('(+ (+ (+ (+ 1 1) 1) 1 1) 1)'), 'Nesting is broken.');
-    Assert.isEqual(6, p('(+ (+ (+ (+ 1 1) 1) 1) 1 1)'), 'Nesting is broken.');
-    Assert.isEqual(6, p('(+ (+ (+ (+ (+ 1 1) 1) 1) 1) 1)', 'Head nesting broken'));
+test('`quote\' should return its argument quoted', function() {
+  equals('(1 2 3)', p('(quote (1 2 3))'), 'Basic quote form broken.');
+  equals('((foo) bar)', p('(quote ((foo) bar))'), 'Two level quote failed.');
+  equals('(((foo) bar) (baz))',
+         p('(quote (((foo) bar) (baz)))'), 'Multi level quote failed.');
+});
 
-    Assert.isEqual(6, p('(+ (+ 1 1) (+ 1 1 1 1))', 'Nesting is broken.'));
-    Assert.isEqual(6, p('(+ (+ 1 1) (+ 1 1) (+ 1 1))', 'Nesting is broken.'));
-    Assert.isEqual(6, p('(+ (+ 1 1 1 1) (+ 1 1))', 'Nesting is broken.'));
+test('`set!\' should set the value of variables which are already defined.', function() {
+  p('(define set-tester 1)');
+  equals(1, p('set-tester'), 'Define form seems to have failed.');
+  equals('set-tester',
+         p('(set! set-tester 2)'),
+         'Set! form should return the name of the variable it set.');
+  equals(2,
+         p('set-tester'), 'Set! form is broken.');
+});
+
+module('Interpreter');
+
+test('Special characters', function() {
+  equals('(foo bar)', p('\'(foo bar)').toString(), 'Error reading quoted list');
+  equals('foobar', p('\'foobar').toString(), 'Error reading quoted s-expression');
+});
+
+test('Nesting', function() {
+    equals(6, p('(+ 1 1 1 1 1 1)'), 'Control is broken');
+
+    equals(6, p('(+ 1 (+ 1 1 1 1 1))'), 'Nesting is broken.');
+    equals(6, p('(+ 1 1 (+ 1 1 1 1))'), 'Nesting is broken.');
+    equals(6, p('(+ 1 1 1 (+ 1 1 1))'), 'Nesting is broken.');
+    equals(6, p('(+ 1 1 1 1 (+ 1 1))'), 'Nesting is broken.');
+    equals(6, p('(+ 1 (+ 1 1 1 (+ 1 1)))'), 'Nesting is broken.');
+    equals(6, p('(+ 1 1 (+ 1 1 (+ 1 1)))'), 'Nesting is broken.');
+    equals(6, p('(+ 1 1 1 (+ 1 (+ 1 1)))'), 'Nesting is broken.');
+    equals(6, p('(+ 1 (+ 1 1 (+ 1 (+ 1 1))))'), 'Nesting is broken.');
+    equals(6, p('(+ 1 1 (+ 1 (+ 1 (+ 1 1))))'), 'Nesting is broken.');
+    equals(6, p('(+ 1 (+ 1 (+ 1 (+ 1 (+ 1 1)))))', 'Tail nesting broken'));
+
+    equals(6, p('(+ (+ 1 1 1 1 1) 1)'), 'Nesting is broken.');
+    equals(6, p('(+ (+ 1 1 1 1) 1 1)'), 'Nesting is broken.');
+    equals(6, p('(+ (+ 1 1 1) 1 1 1)'), 'Nesting is broken.');
+    equals(6, p('(+ (+ 1 1) 1 1 1 1)'), 'Nesting is broken.');
+    equals(6, p('(+ (+ (+ 1 1) 1 1 1) 1)'), 'Nesting is broken.');
+    equals(6, p('(+ (+ (+ 1 1) 1 1) 1 1)'), 'Nesting is broken.');
+    equals(6, p('(+ (+ (+ 1 1) 1) 1 1 1)'), 'Nesting is broken.');
+    equals(6, p('(+ (+ (+ (+ 1 1) 1) 1 1) 1)'), 'Nesting is broken.');
+    equals(6, p('(+ (+ (+ (+ 1 1) 1) 1) 1 1)'), 'Nesting is broken.');
+    equals(6, p('(+ (+ (+ (+ (+ 1 1) 1) 1) 1) 1)', 'Head nesting broken'));
+
+    equals(6, p('(+ (+ 1 1) (+ 1 1 1 1))', 'Nesting is broken.'));
+    equals(6, p('(+ (+ 1 1) (+ 1 1) (+ 1 1))', 'Nesting is broken.'));
+    equals(6, p('(+ (+ 1 1 1 1) (+ 1 1))', 'Nesting is broken.'));
 
     var list = '(foo)';
-    Assert.isEqual(list, p('\'' + list), 'Single level nesting is broken.');
+    equals(list, p('\'' + list), 'Single level nesting is broken.');
     list = '(' + list + ')';
-    Assert.isEqual(list, p('\'' + list), 'Double level nesting is broken.');
+    equals(list, p('\'' + list), 'Double level nesting is broken.');
     list = '(' + list + ')';
-    Assert.isEqual(list, p('\'' + list), 'Triple level nesting is broken.');
+    equals(list, p('\'' + list), 'Triple level nesting is broken.');
     list = '(' + list + ')';
-    Assert.isEqual(list, p('\'' + list), 'Multi-level nesting is broken.');
+    equals(list, p('\'' + list), 'Multi-level nesting is broken.');
     list = '(' + list + ')';
-    Assert.isEqual(list, p('\'' + list), 'Multi-level nesting is broken.');
+    equals(list, p('\'' + list), 'Multi-level nesting is broken.');
     list = '(' + list + ')';
-    Assert.isEqual(list, p('\'' + list), 'Multi-level nesting is broken.');
+    equals(list, p('\'' + list), 'Multi-level nesting is broken.');
     list = '(' + list + ')';
-    Assert.isEqual(list, p('\'' + list), 'Multi-level nesting is broken.');
+    equals(list, p('\'' + list), 'Multi-level nesting is broken.');
     list = '(' + list + ')';
-    Assert.isEqual(list, p('\'' + list), 'Multi-level nesting is broken.');
+    equals(list, p('\'' + list), 'Multi-level nesting is broken.');
     list = '(' + list + ')';
-    Assert.isEqual(list, p('\'' + list), 'Multi-level nesting is broken.');
+    equals(list, p('\'' + list), 'Multi-level nesting is broken.');
     list = '(' + list + ')';
-    Assert.isEqual(list, p('\'' + list), 'Multi-level nesting is broken.');
+    equals(list, p('\'' + list), 'Multi-level nesting is broken.');
     list = '(' + list + ')';
-    Assert.isEqual(list, p('\'' + list), 'Multi-level nesting is broken.');
+    equals(list, p('\'' + list), 'Multi-level nesting is broken.');
     list = '(' + list + ')';
-    Assert.isEqual(list, p('\'' + list), 'Multi-level nesting is broken.');
-
-    return true;
-  };
-}
+    equals(list, p('\'' + list), 'Multi-level nesting is broken.');
+});
