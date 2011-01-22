@@ -77,11 +77,14 @@ List._appendList = function(to, from) {
 };
 
 List._toString = function(arr) {
-  var sb = '(';
+  var sb = ['('];
   for( var i = 0, len = arr.length - 1; i < len; ++i ) {
-    sb += arr[i].toString() + ' ';
+    sb.push(arr[i].toString())
+    sb.push(' ');
   }
-  return sb + arr[arr.length - 1] + ')';
+  sb.push(arr[arr.length - 1]);
+  sb.push(')');
+  return sb.join('');
 };
 
 List._evaluate = function(arr, that) {
@@ -148,7 +151,7 @@ Scope._setValue = function(values, str, val) {
   return str;
 };
 
-/* Class DefinedFunction */
+/* Class FunctionCompiler */
 var FunctionCompiler = function(argc, fn) {
   this.argc = argc;
   this.fn = fn;
@@ -157,13 +160,20 @@ var FunctionCompiler = function(argc, fn) {
 };
 
 FunctionCompiler.prototype.getCode = function() {
-  var sbOutside = 'function(list){';
-  var sbInside = 'return ' + this.fn + '(';
+  var sbOutside = ['function(list){'];
+  var sbInside = ['return ', this.fn, '('];
+  var varName;
   for( var i = 0; i < this.argc; ++i ) {
-    sbOutside += 'var v' + i.toString() + '=list.objectAt(' + (i + 1).toString() + ').evaluate();';
-    sbInside += 'v' + i.toString() + ((i < (this.argc - 1)) ? ',' : ');').toString();
+    varName = 'v' + i.toString();
+    sbOutside.push('var ');
+    sbOutside.push(varName);
+    sbOutside.push('=list.objectAt(')
+    sbOutside.push((i + 1).toString());
+    sbOutside.push(').evaluate();');
+    sbInside.push(varName);
+    sbInside.push((i < (this.argc - 1)) ? ',' : ');');
   }
-  return sbOutside + sbInside + '}';
+  return sbOutside.join('') + sbInside.join('') + '}';
 };
 
 FunctionCompiler.prototype.compile = function() {
