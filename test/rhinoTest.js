@@ -36,8 +36,8 @@ String.prototype.inspect = function() {
   }
 })();
 
-load('scheme.js');
-load('qunitRhino.js');
-load('schemeTest.js');
+load('src/scheme.js');
+load('lib/qunitRhino.js');
+load('test/schemeTest.js');
 
 new QUnit.ConsolePrinter().print();
