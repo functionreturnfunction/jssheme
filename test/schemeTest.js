@@ -281,6 +281,15 @@ test('Recursive add function', function() {
   equals(17, p('(add 8 9)'));
 });
 
+test('Recursive factorial function', function() {
+  p('(define fac (lambda (n) (if (< n 2) 1 (* n (fac (- n 1))))))');
+  equals(1, p('(fac 1)'));
+  equals(2, p('(fac 2)'));
+  equals(6, p('(fac 3)'));
+  equals(24, p('(fac 4)'));
+  equals(120, p('(fac 4)'));
+});
+
 module('Interpreter');
 
 test('Special characters', function() {
