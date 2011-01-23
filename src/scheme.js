@@ -167,58 +167,14 @@ var FunctionCompiler = function(argc, fn) {
   return true;
 };
 
-FunctionCompiler.prototype.getCode = function() {
-  var sbOutside = ['function(list){'];
-  var sbInside = ['return ', this.fn, '('];
-  var varName;
-  for( var i = 0; i < this.argc; ++i ) {
-    varName = 'v' + i.toString();
-    sbOutside.push('var ');
-    sbOutside.push(varName);
-    sbOutside.push('=list.objectAt(')
-    sbOutside.push((i + 1).toString());
-    sbOutside.push(').evaluate();');
-    sbInside.push(varName);
-    sbInside.push((i < (this.argc - 1)) ? ',' : ');');
-  }
-  return sbOutside.join('') + sbInside.join('') + '}';
-};
-
 FunctionCompiler.prototype.compile = function() {
-  switch( this.argc ) {
-    case -1:
-    case 0:
-      return this.fn;
-    case 1:
-    case 2:
-    case 3:
-      return FunctionCompiler['_compile' + this.argc.toString()](this.fn);
-    default:
-      return eval(this.getCode());
-  }
-};
-
-FunctionCompiler._compile1 = function(fn) {
+  var fn = this.fn, argc = this.argc;
   return function(list) {
-    var obj = list.objectAt(1);
-    return fn(obj);
-  };
-};
-
-FunctionCompiler._compile2 = function(fn) {
-  return function(list) {
-    var obj = list.objectAt(1);
-    var obj2 = list.objectAt(2);
-    return fn(obj, obj2);
-  };
-};
-
-FunctionCompiler._compile3 = function(fn) {
-  return function(list) {
-    var obj = list.objectAt(1);
-    var obj2 = list.objectAt(2);
-    var obj3 = list.objectAt(3);
-    return fn(obj, obj2, obj3);
+    var args = [];
+    for (var i = 1; i <= argc; ++i) {
+      args.push(list.objectAt(i));
+    }
+    return fn.apply(list, args);
   };
 };
 
@@ -331,7 +287,11 @@ var Interpreter = {
       return FunctionCompiler.compileFunction(argc, function() {
         body.scope = new Scope();
         for (var i = 0; i < argc; ++i) {
-          body.scope.setValue(argList.objectAt(i), arguments[i].evaluate());
+          var name = argList.objectAt(i), value = arguments[i].evaluate();
+          // if (name == 'i') {
+          //   console.log('setting var i to ' + value.toString());
+          // }
+          body.scope.setValue(name, value);
         }
         return body.evaluate();
       });

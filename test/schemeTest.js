@@ -158,13 +158,13 @@ test('`begin\' evaluates all of its arguments, returning the value from the last
 test('`case\' is really hard to define in a short string, but it should work', function() {
   equals('foo',
          p('(case 1 ((1 1 1 1) \'foo) ((2 2 2 2) \'bar))'),
-           'Basic case call failed.');
+         'Basic case call failed.');
   equals('bar',
          p('(case 2 ((1 1 1 1) \'foo) ((2 2 2 2) \'bar))'),
-           'Basic case call failed.');
+         'Basic case call failed.');
   equals('foobar',
          p('(case 3 ((1 1 1 1) \'foo) ((2 2 2 2) \'bar) (else \'foobar))'),
-		       'Else condition failed in case call.');
+		     'Else condition failed in case call.');
 });
 
 test('`cond\' should work as expected', function() {
@@ -201,7 +201,7 @@ test('`lambda\' should create anonymous functions', function() {
   equals(3, p('((lambda () 3))'), 'Failed to evaluate anonymous function.');
   equals(5, p('((lambda (x y) (+ x y)) 2 3)'), 'Basic addition function failed.');
 });
-  
+
 test('Functions created with `lambda\' should have access to the global scope', function() {
   p('(define lambda-tester 3)');
   equals(6, p('((lambda (x) (+ x lambda-tester)) 3)'),
@@ -213,7 +213,7 @@ test('`let\' should define local variables', function() {
   equals('baz', p('(let ((foo \'bar) (foobar \'baz)) (+ 1 2) (+ (+ 1 1) 1) foobar)'), 'Let form failed.');
   doesThrow(function(){p('foobar')}, 'Let form has leaked, or the variable foobar has been set by a test');
   doesThrow(function(){p('(let ((foo 1) (bar (+ 1 foo))) (+ foo bar))')},
-		                 'Regular let form should not allow use of bindings created during its own evaluation.');
+		        'Regular let form should not allow use of bindings created during its own evaluation.');
 });
 
 test('`let*\' should define local variables in terms of other local variables', function() {
@@ -271,6 +271,16 @@ test('Recursive fibonacci function', function() {
   // equals(144, p('(fib 12)'), 'Recursive Fibonacci function failed.');
 });
 
+test('Recursive add function', function() {
+  p('(define add (lambda (x y) (if (= 0 y) x (+ 1 (add x (- y 1))))))');
+  equals(4, p('(add 2 2)'));
+  equals(5, p('(add 2 3)'));
+  equals(8, p('(add 4 4)'));
+  equals(9, p('(add 4 5)'));
+  equals(16, p('(add 8 8)'));
+  equals(17, p('(add 8 9)'));
+});
+
 module('Interpreter');
 
 test('Special characters', function() {
@@ -279,56 +289,56 @@ test('Special characters', function() {
 });
 
 test('Nesting', function() {
-    equals(6, p('(+ 1 1 1 1 1 1)'), 'Control is broken');
+  equals(6, p('(+ 1 1 1 1 1 1)'), 'Control is broken');
 
-    equals(6, p('(+ 1 (+ 1 1 1 1 1))'), 'Nesting is broken.');
-    equals(6, p('(+ 1 1 (+ 1 1 1 1))'), 'Nesting is broken.');
-    equals(6, p('(+ 1 1 1 (+ 1 1 1))'), 'Nesting is broken.');
-    equals(6, p('(+ 1 1 1 1 (+ 1 1))'), 'Nesting is broken.');
-    equals(6, p('(+ 1 (+ 1 1 1 (+ 1 1)))'), 'Nesting is broken.');
-    equals(6, p('(+ 1 1 (+ 1 1 (+ 1 1)))'), 'Nesting is broken.');
-    equals(6, p('(+ 1 1 1 (+ 1 (+ 1 1)))'), 'Nesting is broken.');
-    equals(6, p('(+ 1 (+ 1 1 (+ 1 (+ 1 1))))'), 'Nesting is broken.');
-    equals(6, p('(+ 1 1 (+ 1 (+ 1 (+ 1 1))))'), 'Nesting is broken.');
-    equals(6, p('(+ 1 (+ 1 (+ 1 (+ 1 (+ 1 1)))))', 'Tail nesting broken'));
+  equals(6, p('(+ 1 (+ 1 1 1 1 1))'), 'Nesting is broken.');
+  equals(6, p('(+ 1 1 (+ 1 1 1 1))'), 'Nesting is broken.');
+  equals(6, p('(+ 1 1 1 (+ 1 1 1))'), 'Nesting is broken.');
+  equals(6, p('(+ 1 1 1 1 (+ 1 1))'), 'Nesting is broken.');
+  equals(6, p('(+ 1 (+ 1 1 1 (+ 1 1)))'), 'Nesting is broken.');
+  equals(6, p('(+ 1 1 (+ 1 1 (+ 1 1)))'), 'Nesting is broken.');
+  equals(6, p('(+ 1 1 1 (+ 1 (+ 1 1)))'), 'Nesting is broken.');
+  equals(6, p('(+ 1 (+ 1 1 (+ 1 (+ 1 1))))'), 'Nesting is broken.');
+  equals(6, p('(+ 1 1 (+ 1 (+ 1 (+ 1 1))))'), 'Nesting is broken.');
+  equals(6, p('(+ 1 (+ 1 (+ 1 (+ 1 (+ 1 1)))))', 'Tail nesting broken'));
 
-    equals(6, p('(+ (+ 1 1 1 1 1) 1)'), 'Nesting is broken.');
-    equals(6, p('(+ (+ 1 1 1 1) 1 1)'), 'Nesting is broken.');
-    equals(6, p('(+ (+ 1 1 1) 1 1 1)'), 'Nesting is broken.');
-    equals(6, p('(+ (+ 1 1) 1 1 1 1)'), 'Nesting is broken.');
-    equals(6, p('(+ (+ (+ 1 1) 1 1 1) 1)'), 'Nesting is broken.');
-    equals(6, p('(+ (+ (+ 1 1) 1 1) 1 1)'), 'Nesting is broken.');
-    equals(6, p('(+ (+ (+ 1 1) 1) 1 1 1)'), 'Nesting is broken.');
-    equals(6, p('(+ (+ (+ (+ 1 1) 1) 1 1) 1)'), 'Nesting is broken.');
-    equals(6, p('(+ (+ (+ (+ 1 1) 1) 1) 1 1)'), 'Nesting is broken.');
-    equals(6, p('(+ (+ (+ (+ (+ 1 1) 1) 1) 1) 1)', 'Head nesting broken'));
+  equals(6, p('(+ (+ 1 1 1 1 1) 1)'), 'Nesting is broken.');
+  equals(6, p('(+ (+ 1 1 1 1) 1 1)'), 'Nesting is broken.');
+  equals(6, p('(+ (+ 1 1 1) 1 1 1)'), 'Nesting is broken.');
+  equals(6, p('(+ (+ 1 1) 1 1 1 1)'), 'Nesting is broken.');
+  equals(6, p('(+ (+ (+ 1 1) 1 1 1) 1)'), 'Nesting is broken.');
+  equals(6, p('(+ (+ (+ 1 1) 1 1) 1 1)'), 'Nesting is broken.');
+  equals(6, p('(+ (+ (+ 1 1) 1) 1 1 1)'), 'Nesting is broken.');
+  equals(6, p('(+ (+ (+ (+ 1 1) 1) 1 1) 1)'), 'Nesting is broken.');
+  equals(6, p('(+ (+ (+ (+ 1 1) 1) 1) 1 1)'), 'Nesting is broken.');
+  equals(6, p('(+ (+ (+ (+ (+ 1 1) 1) 1) 1) 1)', 'Head nesting broken'));
 
-    equals(6, p('(+ (+ 1 1) (+ 1 1 1 1))', 'Nesting is broken.'));
-    equals(6, p('(+ (+ 1 1) (+ 1 1) (+ 1 1))', 'Nesting is broken.'));
-    equals(6, p('(+ (+ 1 1 1 1) (+ 1 1))', 'Nesting is broken.'));
+  equals(6, p('(+ (+ 1 1) (+ 1 1 1 1))', 'Nesting is broken.'));
+  equals(6, p('(+ (+ 1 1) (+ 1 1) (+ 1 1))', 'Nesting is broken.'));
+  equals(6, p('(+ (+ 1 1 1 1) (+ 1 1))', 'Nesting is broken.'));
 
-    var list = '(foo)';
-    equals(list, p('\'' + list), 'Single level nesting is broken.');
-    list = '(' + list + ')';
-    equals(list, p('\'' + list), 'Double level nesting is broken.');
-    list = '(' + list + ')';
-    equals(list, p('\'' + list), 'Triple level nesting is broken.');
-    list = '(' + list + ')';
-    equals(list, p('\'' + list), 'Multi-level nesting is broken.');
-    list = '(' + list + ')';
-    equals(list, p('\'' + list), 'Multi-level nesting is broken.');
-    list = '(' + list + ')';
-    equals(list, p('\'' + list), 'Multi-level nesting is broken.');
-    list = '(' + list + ')';
-    equals(list, p('\'' + list), 'Multi-level nesting is broken.');
-    list = '(' + list + ')';
-    equals(list, p('\'' + list), 'Multi-level nesting is broken.');
-    list = '(' + list + ')';
-    equals(list, p('\'' + list), 'Multi-level nesting is broken.');
-    list = '(' + list + ')';
-    equals(list, p('\'' + list), 'Multi-level nesting is broken.');
-    list = '(' + list + ')';
-    equals(list, p('\'' + list), 'Multi-level nesting is broken.');
-    list = '(' + list + ')';
-    equals(list, p('\'' + list), 'Multi-level nesting is broken.');
+  var list = '(foo)';
+  equals(list, p('\'' + list), 'Single level nesting is broken.');
+  list = '(' + list + ')';
+  equals(list, p('\'' + list), 'Double level nesting is broken.');
+  list = '(' + list + ')';
+  equals(list, p('\'' + list), 'Triple level nesting is broken.');
+  list = '(' + list + ')';
+  equals(list, p('\'' + list), 'Multi-level nesting is broken.');
+  list = '(' + list + ')';
+  equals(list, p('\'' + list), 'Multi-level nesting is broken.');
+  list = '(' + list + ')';
+  equals(list, p('\'' + list), 'Multi-level nesting is broken.');
+  list = '(' + list + ')';
+  equals(list, p('\'' + list), 'Multi-level nesting is broken.');
+  list = '(' + list + ')';
+  equals(list, p('\'' + list), 'Multi-level nesting is broken.');
+  list = '(' + list + ')';
+  equals(list, p('\'' + list), 'Multi-level nesting is broken.');
+  list = '(' + list + ')';
+  equals(list, p('\'' + list), 'Multi-level nesting is broken.');
+  list = '(' + list + ')';
+  equals(list, p('\'' + list), 'Multi-level nesting is broken.');
+  list = '(' + list + ')';
+  equals(list, p('\'' + list), 'Multi-level nesting is broken.');
 });
