@@ -187,6 +187,12 @@ test('`if\' should return its second argument if the first is true, else its thi
          ' and no 3rd argument should return undefined.');
 });
 
+test('`lambda\' should create anonymous functions', function() {
+  same(Function, p('(lambda () \'())').constructor,
+       'Failed to return anonymous function.');
+  equals(3, p('((lambda () 3))'), 'Failed to evaluate anonymous function.');
+});
+
 test('`let\' should define local variables', function() {
   equals(3, p('(let ((x 2)) (+ 1 x))'), 'Basic let call failed.');
   equals('baz', p('(let ((foo \'bar) (foobar \'baz)) (+ 1 2) (+ (+ 1 1) 1) foobar)'), 'Let form failed.');

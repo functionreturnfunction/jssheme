@@ -55,7 +55,7 @@ function benchmark() {
 
 <body>
 <h1>Scheme Interpreter</h1>
-<textarea id=txtInput>(let* ((foo 1) (bar (+ 1 foo))) (+ foo bar))</textarea><br>
+<textarea id=txtInput>(define add (lambda (x y) (+ x y)))</textarea><br>
 <input type=button id=btnGo value="Go!" onclick="interpret()">
 <input type=button id=btnTest value="Display Test Results" onclick="displayResults()">
 <input type=button id=btnBenchmark value="Run Benchmark" onclick="benchmark()"><br/><br/>

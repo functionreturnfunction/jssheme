@@ -313,6 +313,17 @@ var Interpreter = {
       }
     },
 
+    'lambda': FunctionCompiler.compileFunction(2, function(argList, body) {
+      var argc = argList.getLen();
+      return FunctionCompiler.compileFunction(argc, function() {
+        body.scope = new Scope();
+        for (var i = 0; i < argc; ++i) {
+          body.scope.setValue(argList.objectAt(i), arguments[i].evaluate());
+        }
+        return body.evaluate();
+      });
+    }),
+
     'let': function(list) {
       var scope = new Scope();
       var bindings = list.objectAt(1);

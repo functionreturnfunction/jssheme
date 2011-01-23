@@ -115,7 +115,7 @@ QUnit.ConsolePrinter.prototype.print = function() {
 
   print('Overall:\n' + '  ' + totalTests + ' tests, ' + totalSuccesses +
         ' successful, ' + totalFailures + ' failed, ' + totalExceptions +
-        ' exception' + (exceptions == 1 ? '' : 's') + '.\n');
+        ' exception' + (totalExceptions == 1 ? '' : 's') + '.\n');
 };
 
 QUnit.HtmlPrinter.prototype.print = QUnit.ConsolePrinter.prototype.print;
