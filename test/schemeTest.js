@@ -208,21 +208,6 @@ test('Functions created with `lambda\' should have access to the global scope', 
          'Addition function with globally scoped variable failed.');
 });
 
-test('Functions created with `lambda\' should be capable of recursion', function() {
-  p('(define power (lambda (x y) (if (= 1 y) x (* x (power x (- y 1))))))');
-  equals(4, p('(power 2 2)'), 'Recursive exponent function failed.');
-  equals(8, p('(power 2 3)'), 'Recursive exponent function failed.');
-  equals(16, p('(power 2 4)'), 'Recursive exponent function failed.');
-  equals(9, p('(power 3 2)'), 'Recursive exponent function failed.');
-  equals(27, p('(power 3 3)'), 'Recursive exponent function failed.');
-  equals(81, p('(power 3 4)'), 'Recursive exponent function failed.');
-
-  p('(define fib (lambda (i) (if (< i 2) i (+ (fib (- i 1)) (fib (- i 2))))))');
-  equals(55, p('(fib 10)'), 'Recursive Fibbonacci function failed.');
-  equals(89, p('(fib 11)'), 'Recursive Fibbonacci function failed.');
-  equals(144, p('(fib 12)'), 'Recursive Fibbonacci function failed.');
-});
-
 test('`let\' should define local variables', function() {
   equals(3, p('(let ((x 2)) (+ 1 x))'), 'Basic let call failed.');
   equals('baz', p('(let ((foo \'bar) (foobar \'baz)) (+ 1 2) (+ (+ 1 1) 1) foobar)'), 'Let form failed.');
@@ -264,6 +249,25 @@ test('`set!\' should set the value of variables which are already defined.', fun
          'Set! form should return the name of the variable it set.');
   equals(2,
          p('set-tester'), 'Set! form is broken.');
+});
+
+module('Lambda Recursion');
+
+test('Recursive exponent function', function() {
+  p('(define power (lambda (x y) (if (= 1 y) x (* x (power x (- y 1))))))');
+  equals(4, p('(power 2 2)'), 'Recursive exponent function failed.');
+  equals(8, p('(power 2 3)'), 'Recursive exponent function failed.');
+  equals(16, p('(power 2 4)'), 'Recursive exponent function failed.');
+  equals(9, p('(power 3 2)'), 'Recursive exponent function failed.');
+  equals(27, p('(power 3 3)'), 'Recursive exponent function failed.');
+  equals(81, p('(power 3 4)'), 'Recursive exponent function failed.');
+});
+
+test('Recursive fibonacci function', function() {
+  p('(define fib (lambda (i) (if (< i 2) i (+ (fib (- i 1)) (fib (- i 2))))))');
+  equals(55, p('(fib 10)'), 'Recursive Fibonacci function failed.');
+  equals(89, p('(fib 11)'), 'Recursive Fibonacci function failed.');
+  equals(144, p('(fib 12)'), 'Recursive Fibonacci function failed.');
 });
 
 module('Interpreter');

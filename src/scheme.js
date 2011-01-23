@@ -56,7 +56,7 @@ List.prototype.objectAt = function(i) {
 
 /* Private Methods */
 List._copyAndEvalArr = function(arr, scope) {
-  var ret = arr[0];
+  var ret = arr[0], curItem;
   if (ret.constructor == List) {
     ret.scope = scope;
   } else {
@@ -64,13 +64,14 @@ List._copyAndEvalArr = function(arr, scope) {
   }
   ret = [ret.evaluate()];
   for( var i = 1, len = arr.length; i < len; ++i ) {
+    curItem = arr[i];
     // TODO:
     // test this vs. dynamically appending
     // using i
-    if (arr[i].constructor == List) {
-      arr[i].scope = scope;
+    if (curItem.constructor == List) {
+      curItem.scope = scope;
     }
-    ret.push(arr[i]);
+    ret.push(curItem);
   }
   return ret;
 };
@@ -323,7 +324,9 @@ var Interpreter = {
       }
     },
 
-    'lambda': FunctionCompiler.compileFunction(2, function(argList, body) {
+    'lambda': function(list) {
+      var argList = list.objectAt(1);
+      var body = list.objectAt(2);
       var argc = argList.getLen();
       return FunctionCompiler.compileFunction(argc, function() {
         body.scope = new Scope();
@@ -332,7 +335,7 @@ var Interpreter = {
         }
         return body.evaluate();
       });
-    }),
+    },
 
     'let': function(list) {
       var scope = new Scope();
