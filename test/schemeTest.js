@@ -73,8 +73,14 @@ test('Basic arithmetic operations', function() {
   equals(15, p('(- 100 50 25 10)'), 'Subtraction is broken');
   equals(24, p('(* 1 2 3 4)'), 'Multiplication is broken');
   equals(1, p('(/ 64 8 4 2)'), 'Division is broken');
-  equals(true, p('(= 1 1)'), 'Numeric equality is broken');
-  equals(false, p('(= 1 2)'), 'Numeric equality is broken');
+  ok(p('(= 1 1)'), 'Numeric equality is broken');
+  ok(!p('(= 1 2)'), 'Numeric equality is broken');
+  ok(p('(< 1 2)'), 'Less than operator is broken');
+  ok(!p('(< 2 1)'), 'Less than operator is broken');
+  ok(!p('(< 1 1)'), 'Less than operator is broken');
+  ok(p('(> 2 1)'), 'Less than operator is broken');
+  ok(!p('(> 1 2)'), 'Less than operator is broken');
+  ok(!p('(> 1 1)'), 'Less than operator is broken');
 });
 
 test('`car\' should return the first element of a list', function() {
@@ -194,13 +200,27 @@ test('`lambda\' should create anonymous functions', function() {
        'Failed to return anonymous function.');
   equals(3, p('((lambda () 3))'), 'Failed to evaluate anonymous function.');
   equals(5, p('((lambda (x y) (+ x y)) 2 3)'), 'Basic addition function failed.');
+});
   
+test('Functions created with `lambda\' should have access to the global scope', function() {
   p('(define lambda-tester 3)');
   equals(6, p('((lambda (x) (+ x lambda-tester)) 3)'),
          'Addition function with globally scoped variable failed.');
+});
 
+test('Functions created with `lambda\' should be capable of recursion', function() {
   p('(define power (lambda (x y) (if (= 1 y) x (* x (power x (- y 1))))))');
-  equals(4, p('(power 2 2)'), 'Recursive function failed.');
+  equals(4, p('(power 2 2)'), 'Recursive exponent function failed.');
+  equals(8, p('(power 2 3)'), 'Recursive exponent function failed.');
+  equals(16, p('(power 2 4)'), 'Recursive exponent function failed.');
+  equals(9, p('(power 3 2)'), 'Recursive exponent function failed.');
+  equals(27, p('(power 3 3)'), 'Recursive exponent function failed.');
+  equals(81, p('(power 3 4)'), 'Recursive exponent function failed.');
+
+  p('(define fib (lambda (i) (if (< i 2) i (+ (fib (- i 1)) (fib (- i 2))))))');
+  equals(55, p('(fib 10)'), 'Recursive Fibbonacci function failed.');
+  equals(89, p('(fib 11)'), 'Recursive Fibbonacci function failed.');
+  equals(144, p('(fib 12)'), 'Recursive Fibbonacci function failed.');
 });
 
 test('`let\' should define local variables', function() {
