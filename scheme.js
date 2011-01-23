@@ -57,7 +57,7 @@ List.prototype.objectAt = function(i) {
 /* Private Methods */
 List._copyAndEvalArr = function(arr, scope) {
   var ret = arr[0];
-  ret = new Atom(ret, false, scope);
+  ret = ret.constructor == List ? ret : new Atom(ret, false, scope);
   ret = [ret.evaluate()];
   for( var i = 1, len = arr.length; i < len; ++i ) {
     // TODO:
@@ -243,7 +243,8 @@ var Interpreter = {
     '+': function(x, y) { return x + y; },
     '-': function(x, y) { return x - y; },
     '*': function(x, y) { return x * y; },
-    '/': function(x, y) { return x / y; }
+    '/': function(x, y) { return x / y; },
+    '=': function(x, y) { return x == y }
   },
 
   /* Defined Special Forms */

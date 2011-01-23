@@ -73,6 +73,8 @@ test('Basic arithmetic operations', function() {
   equals(15, p('(- 100 50 25 10)'), 'Subtraction is broken');
   equals(24, p('(* 1 2 3 4)'), 'Multiplication is broken');
   equals(1, p('(/ 64 8 4 2)'), 'Division is broken');
+  equals(true, p('(= 1 1)'), 'Numeric equality is broken');
+  equals(false, p('(= 1 2)'), 'Numeric equality is broken');
 });
 
 test('`car\' should return the first element of a list', function() {
@@ -191,6 +193,14 @@ test('`lambda\' should create anonymous functions', function() {
   same(Function, p('(lambda () \'())').constructor,
        'Failed to return anonymous function.');
   equals(3, p('((lambda () 3))'), 'Failed to evaluate anonymous function.');
+  equals(5, p('((lambda (x y) (+ x y)) 2 3)'), 'Basic addition function failed.');
+  
+  p('(define lambda-tester 3)');
+  equals(6, p('((lambda (x) (+ x lambda-tester)) 3)'),
+         'Addition function with globally scoped variable failed.');
+
+  p('(define power (lambda (x y) (if (= 1 y) x (* x (power x (- y 1))))))');
+  equals(4, p('(power 2 2)'), 'Recursive function failed.');
 });
 
 test('`let\' should define local variables', function() {
