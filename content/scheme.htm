@@ -1,11 +1,36 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html> <head>
 <title>Scheme Interpreter</title>
+<style type=text/css>
+#txtInput {
+  width: 100%
+}
+.bold {
+  font-weight: bold
+}
+</style>
+</head>
+
+<body>
+<h1>Scheme Interpreter</h1>
+<textarea id=txtInput></textarea><br>
+<input type=button id=btnGo value="Go!" onclick="interpret()">
+<input type=button id=btnTest value="Display Test Results" onclick="displayResults()">
+<input type=button id=btnBenchmark value="Run Benchmark" onclick="benchmark()"><br/><br/>
+<pre id=result></pre>
+
+<hr>
+<address></address>
+<!-- hhmts start --> Last modified: Wed Mar 12 07:40:32 EDT 2008 <!-- hhmts end -->
 <script type=text/javascript language=javascript src="../src/scheme.js"></script>
 <script type=text/javascript language=javascript src="../lib/qunitRhino.js"></script>
 <script type=text/javascript language=javascript src="../test/schemeTest.js"></script>
 <script type=text/javascript language=javascript>
+var CODE = '(define power (lambda (x y) (if (= 1 y) x (* x (power x (- y 1))))))';
+
 function $(id) { return document.getElementById(id); }
+
+$('txtInput').value = CODE;
 
 function interpret() {
   try {
@@ -43,25 +68,4 @@ function benchmark() {
     date.toString() + 'ms to run ' + (++times).toString() + ' times.'
 }
 </script>
-<style type=text/css>
-#txtInput {
-  width: 100%
-}
-.bold {
-  font-weight: bold
-}
-</style>
-</head>
-
-<body>
-<h1>Scheme Interpreter</h1>
-<textarea id=txtInput>(define add (lambda (x y) (+ x y)))</textarea><br>
-<input type=button id=btnGo value="Go!" onclick="interpret()">
-<input type=button id=btnTest value="Display Test Results" onclick="displayResults()">
-<input type=button id=btnBenchmark value="Run Benchmark" onclick="benchmark()"><br/><br/>
-<pre id=result></pre>
-
-<hr>
-<address></address>
-<!-- hhmts start --> Last modified: Wed Mar 12 07:40:32 EDT 2008 <!-- hhmts end -->
 </body> </html>

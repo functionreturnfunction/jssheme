@@ -57,12 +57,19 @@ List.prototype.objectAt = function(i) {
 /* Private Methods */
 List._copyAndEvalArr = function(arr, scope) {
   var ret = arr[0];
-  ret = ret.constructor == List ? ret : new Atom(ret, false, scope);
+  if (ret.constructor == List) {
+    ret.scope = scope;
+  } else {
+    ret = new Atom(ret, false, scope);
+  }
   ret = [ret.evaluate()];
   for( var i = 1, len = arr.length; i < len; ++i ) {
     // TODO:
     // test this vs. dynamically appending
     // using i
+    if (arr[i].constructor == List) {
+      arr[i].scope = scope;
+    }
     ret.push(arr[i]);
   }
   return ret;
