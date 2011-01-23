@@ -130,6 +130,21 @@ test('`number?\' return true if argument is a number, else false', function() {
   ok(!p('(number? +)'), 'Number type-check function failed.');
 });
 
+test('`pp\' should print the given string through the interpreter and return nothing', function() {
+  var printed = false;
+  var correctStr = false;
+  var toPrint = 'str';
+  var oldPrint = Interpreter.print;
+  Interpreter.print = function(str) {
+    printed = true;
+    correctStr = str == toPrint;
+  };
+
+  p('(pp "str")')
+
+  Interpreter.print = oldPrint;
+});
+
 module('Scheme Constants');
 
 test('Truth constants', function() {
@@ -292,6 +307,19 @@ test('Recursive factorial function', function() {
 
 module('Interpreter');
 
+test('string interpretation', function() {
+  equals('string', p('"string"'), 'Basic string parsing broken');
+  equals('string with spaces', p('"string with spaces"'),
+        'Parsing string with spaces broken');
+});
+
+test('number interpretation', function() {
+  equals(1, p('1'), 'Basic number parsing broken');
+  equals(1.1, p('1.1'), 'Parsing number with decimals broken');
+  equals(-1, p('-1'), 'Parsing negative number broken');
+  equals(-1.1, p('-1.1'), 'Parsing negative number with decimals broken');
+});
+
 test('Special characters', function() {
   equals('(foo bar)', p('\'(foo bar)').toString(), 'Error reading quoted list');
   equals('foobar', p('\'foobar').toString(), 'Error reading quoted s-expression');
@@ -350,4 +378,30 @@ test('Nesting', function() {
   equals(list, p('\'' + list), 'Multi-level nesting is broken.');
   list = '(' + list + ')';
   equals(list, p('\'' + list), 'Multi-level nesting is broken.');
+});
+
+test('.print(str) throws an exception if printing has not been initialized', function() {
+  Interpreter.initPrinter(null);
+
+  doesThrow(function() {
+    Interpreter.print('foo');
+  }, 'Printing should fail if printer has not yet been initialized.');
+});
+
+test('.print(str) should call the printer function with the given string and an extra newline', function() {
+  var printed = false;
+  var correctStr = false;
+  var toPrint = 'this is the str to print';
+  var printFn = function(str) {
+    printed = true;
+    correctStr = (str == toPrint + '\n');
+  };
+
+  Interpreter.initPrinter(printFn);
+  Interpreter.print(toPrint);
+
+  ok(printed, '.print did not use the printFn');
+  ok(correctStr, '.print did not use the correct string');
+
+  Interpreter.initPrinter(null);
 });

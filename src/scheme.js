@@ -427,9 +427,24 @@ var Interpreter = {
       obj = obj.evaluate();
       return (typeof(obj) == 'number');
     }),
+
+    'pp': FunctionCompiler.compileFunction(1, function(obj) {
+      Interpreter.print(obj.evaluate());
+    })
   },
 
   /* Class Methods */
+  initPrinter: function(printFn) {
+    Interpreter._printFn = printFn;
+  },
+
+  print: function(str) {
+    if (!Interpreter._printFn) {
+      throw 'Print function not yet initialized.';
+    }
+    Interpreter._printFn(str + '\n');
+  },
+
   _initPtrs: function() {
     var ptrs = Interpreter.ptrs;
     ptrs.head = 0;

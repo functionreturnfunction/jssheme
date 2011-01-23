@@ -33,19 +33,21 @@ function $(id) { return document.getElementById(id); }
 $('txtInput').value = CODE;
 
 function interpret() {
+  var output = $('result'), result;
+  output.innerHTML = '';
   try {
-    var result = Interpreter.parse($('txtInput').value);
+    result = Interpreter.parse($('txtInput').value);
     if( result == undefined ) {
       result = ';Unspecified return value'
     } else {
       result = ';Value: ' + result.toString();
     }
-    $('result').innerHTML = result;
   } catch(e) {
     if( !Interpreter.exception )
       throw(e);
-    $('result').innerHTML = '<span class=bold>Exception:</span><br/>;' + e.toString();
+    result = '<span class=bold>Exception:</span><br/>;' + e.toString();
   }
+  output.innerHTML += result;
 }
 
 function displayResults() {
@@ -67,5 +69,9 @@ function benchmark() {
   $('result').innerHTML = ';Value: ' + result.toString() + '<br>Took ' +
     date.toString() + 'ms to run ' + (++times).toString() + ' times.'
 }
+
+Interpreter.initPrinter(function (str) {
+  $('result').innerHTML += str;
+});
 </script>
 </body> </html>
