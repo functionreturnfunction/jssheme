@@ -374,6 +374,8 @@ test('Recursive exponent function', function() {
 
 test('Recursive fibonacci function', function() {
   p('(define fib (lambda (i) (if (< i 2) i (+ (fib (- i 1)) (fib (- i 2))))))');
+  // for printing
+//  p('(define fib (lambda (i) (begin (pp (string-append "running with i = " (number->string i))) (if (< i 2) i (let ((first (fib (- i 1))) (second (fib (- i 2)))) (begin (pp (string-append "adding " (number->string first) " to " (number->string second))) (+ first second)))))))');
   equals(2, p('(fib 3)'), 'Recursive Fibonacci function failed.');
   // equals(55, p('(fib 10)'), 'Recursive Fibonacci function failed.');
   // equals(89, p('(fib 11)'), 'Recursive Fibonacci function failed.');
@@ -475,14 +477,19 @@ test('Nesting', function() {
 });
 
 test('.print(str) throws an exception if printing has not been initialized', function() {
-  Interpreter.initPrinter(null);
+//  Interpreter.initPrinter(null);
+  var oldPrintFn = Interpreter._printFn;
+  Interpreter._printFn = null;
 
   doesThrow(function() {
     Interpreter.print('foo');
   }, 'Printing should fail if printer has not yet been initialized.');
+
+  Interpreter._printFn = oldPrintFn;
 });
 
 test('.print(str) should call the printer function with the given string and an extra newline', function() {
+  var oldPrintFn = Interpreter._printFn;
   var printed = false;
   var correctStr = false;
   var toPrint = 'this is the str to print';
@@ -498,4 +505,5 @@ test('.print(str) should call the printer function with the given string and an 
   ok(correctStr, '.print did not use the correct string');
 
   Interpreter.initPrinter(null);
+  Interpreter._printFn = oldPrintFn;
 });

@@ -24,9 +24,9 @@
 <!-- hhmts start --> Last modified: Wed Mar 12 07:40:32 EDT 2008 <!-- hhmts end -->
 <script type=text/javascript language=javascript src="../src/scheme.js"></script>
 <script type=text/javascript language=javascript src="../lib/qunitRhino.js"></script>
-<script type=text/javascript language=javascript src="../test/schemeTest.js"></script>
 <script type=text/javascript language=javascript>
-var CODE = '(define fib (lambda (i) (if (< i 2) i (+ (fib (- i 1)) (fib (- i 2))))))';
+//var CODE = '(define fib (lambda (i) (if (< i 2) i (+ (fib (- i 1)) (fib (- i 2))))))';
+var CODE = '(define fib (lambda (i) (begin (pp (string-append "running with i = " (number->string i))) (if (< i 2) i (let ((first (fib (- i 1))) (second (fib (- i 2)))) (begin (pp (string-append "adding " (number->string first) " to " (number->string second))) (+ first second)))))))';
 
 function $(id) { return document.getElementById(id); }
 
@@ -74,4 +74,6 @@ Interpreter.initPrinter(function (str) {
   $('result').innerHTML += str;
 });
 </script>
+<!-- needs to load after the printer is initialized -->
+<script type=text/javascript language=javascript src="../test/schemeTest.js"></script>
 </body> </html>
