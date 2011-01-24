@@ -282,9 +282,18 @@ test('`string->number\' should convert the given string to a number using 10 as 
          'Error parsing number with the default radix');
   equals(10, p('(string->number "10")'),
          'Error parsing number with the default radix');
+  equals(16, p('(string->number "16")'),
+         'Error parsing number with the default radix');
 });
 
 test('`string->number\' should convert the given string to a number using the given radix', function() {
+  // TODO: wire this up
+  // var radix;
+  // for (var i = 0; i < 26; ++i) {
+  //   for (var j = 0, len = Interpreter.VALID_RADII.length; j < len; ++j) {
+  //     radix = Interpreter.VALID_RADII[j];
+  //   }
+  // }
   // base 2
   equals(1, p('(string->number "1" 2)'),
          'Error parsing number with radix of 2');
@@ -306,24 +315,41 @@ test('`string->number\' should convert the given string to a number using the gi
          'Error parsing number with radix of 8');
 
   // base 10
-  equals(1, p('(string->number "1" 2)'),
+  equals(1, p('(string->number "1" 10)'),
          'Error parsing number with radix of 10');
-  equals(5, p('(string->number "5" 2)'),
+  equals(5, p('(string->number "5" 10)'),
          'Error parsing number with radix of 10');
-  equals(10, p('(string->number "1010" 2)'),
+  equals(10, p('(string->number "10" 10)'),
          'Error parsing number with radix of 10');
   equals(16, p('(string->number "16" 10)'),
          'Error parsing number with radix of 10');
 
   // base 16
-  equals(1, p('(string->number "1" 2)'),
+  equals(1, p('(string->number "1" 16)'),
          'Error parsing number with radix of 16');
-  equals(5, p('(string->number "101" 2)'),
+  equals(5, p('(string->number "5" 16)'),
          'Error parsing number with radix of 16');
-  equals(10, p('(string->number "1010" 2)'),
+  equals(10, p('(string->number "a" 16)'),
          'Error parsing number with radix of 16');
   equals(16, p('(string->number "10" 16)'),
          'Error parsing number with radix of 16');
+});
+
+test('`string->number\' should return false if given a number with decimals and a radix', function() {
+  ok(!p('(string->number "1.1" 2)'));
+  ok(!p('(string->number "1.1" 2)'));
+});
+
+test('`string->number\' should throw an exception if given an invalid radix', function() {
+  for (var i = 100; i >= 1; --i) {
+    if (Interpreter.VALID_RADII.indexOf(i) > -1) {
+      continue;
+    }
+
+    doesThrow(function() {
+      p('(string->number "1000" ' + i + ')');
+    }, 'Failed to error on invalid radix');
+  }
 });
 
 module('Lambda Recursion');

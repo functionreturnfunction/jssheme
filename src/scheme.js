@@ -183,6 +183,7 @@ FunctionCompiler.compileFunction = function(argc, fn) {
 };
 
 var Interpreter = {
+  VALID_RADII: [2, 8, 10, 16],
   /* Class Variables */
   // if this is set, the last thrown
   // was generated from inside the scheme
@@ -444,11 +445,24 @@ var Interpreter = {
     },
 
     'string->number': function(list) {
-      // TODO: return false if number cannot be parsed
-      // TODO: return false if radix provided but number is float
-      // TODO: use parseInt if radix provided and number is not float
-      return parseFloat(list.objectAt(1).evaluate(),
-                        list.getLen() > 2 ? list.objectAt(2).evaluate() : 10);
+      var num = list.objectAt(1).evaluate();
+      var radix = list.getLen() > 2 ? list.objectAt(2).evaluate() : false;
+      var ret;
+      if (radix !== false) {
+        if (Interpreter.VALID_RADII.indexOf(radix) == -1) {
+          throw new InterpreterExceptions.objectOutOfRange(radix, 'string->number');
+        }
+
+        if (/^\d+\.\d+$/.test(num)) {
+          return false;
+        }
+
+        ret = parseInt(num, radix);
+        return isNaN(ret) ? false : ret;
+      }
+
+      ret = parseFloat(num);
+      return isNaN(ret) ? false : ret;
     }
   },
 
@@ -672,7 +686,16 @@ var InterpreterExceptions = {
   variableNotSet: function(obj) {
     this.toString = function() {
       return 'The variable ' + obj.toString() + ' is not set.';
-    }
+    };
+    Interpreter.exception = this;
+    return true;
+  },
+
+  objectOutOfRange: function(obj, fnName) {
+    this.toString = function() {
+      return 'The object ' + obj.toString() + ', passed as an argument to ' +
+        fnName + ', is not in the correct range.'
+    };
     Interpreter.exception = this;
     return true;
   }
