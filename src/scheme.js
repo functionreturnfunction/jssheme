@@ -509,9 +509,9 @@ var Interpreter = {
   _getLiteral: function(str) {
     var match;
     switch( true ) {
-      case /^\d+\.\d+$/.test(str):
+      case /^-?\d+\.\d+$/.test(str):
         return parseFloat(str, 10);
-      case /^\d+$/.test(str):
+      case /^-?\d+$/.test(str):
         return parseInt(str, 10);
       case (match = str.match(/^"(.*)"$/)) != null:
         return match[1]; // string
