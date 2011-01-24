@@ -436,6 +436,10 @@ var Interpreter = {
 
   /* Compiled Functions */
   compiledFunctions: {
+    'number->string': function(list) {
+      return list.objectAt(1).evaluate().toString();
+    },
+
     'string-append': function(list) {
       var sb = [], argc = list.getLen();
       for (var i = 1; i < argc; ++i) {

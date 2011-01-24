@@ -19,6 +19,18 @@
   - symbol?
   - vector?
 
+* More compiled functions
+  - number->string
+    - basic form working
+    - still needs radix
+    - still needs type checking/error handling
+      - 1st arg is not a number
+      - 2nd arg is not a number
+      - 2nd arg is not a valid radix
+
+* Implement type checking for existing function and special form implementations
+  - using the appropriate messages
+
 * Create preparser
    - needs to merge & convert whitespace
 

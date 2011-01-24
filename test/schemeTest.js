@@ -268,6 +268,14 @@ test('`set!\' should set the value of variables which are already defined.', fun
 
 module('Scheme Compiled Functions');
 
+test('`number->string\' should return the given number converted to a string', function() {
+  for (var f = -1; f < 2; f += 0.5) {
+    f = f.toString()
+    equals(f, p('(number->string ' + f + ')'),
+           'Error converting ' + f + ' to string');
+  }
+});
+
 test('`string-append\' should return a string built from all its arguments', function() {
   equals('foobar', p('(string-append "foo" "bar")'),
          'Failed to build two part string');
