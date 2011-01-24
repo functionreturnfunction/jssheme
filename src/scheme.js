@@ -548,6 +548,7 @@ var Interpreter = {
     var chars = Interpreter.specialChars;
     var quoted = quoted || false;
     var list = list instanceof List ? list : null;
+    var readingString = false;
     var curChar, curStr;
 
 
@@ -602,11 +603,16 @@ var Interpreter = {
           ptrs.head++;
           ptrs.tail = ptrs.head;
           break;
+        case chars.doubleQuote:
+          readingString = !readingString;
+          ptrs.head++;
+          break;
         default:
           while( ptrs.head++ < ptrs.max ) {
             curChar = this._getCurChar();
-            if( curChar == chars.space ||
-                curChar == chars.closeParens ) {
+            if ((readingString && curChar == chars.doubleQuote) ||
+                (!readingString && (curChar == chars.space ||
+                                    curChar == chars.closeParens))) {
               break;
             }
           }
