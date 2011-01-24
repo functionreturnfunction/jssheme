@@ -398,7 +398,7 @@ test('Recursive factorial function', function() {
   equals(2, p('(fac 2)'));
   equals(6, p('(fac 3)'));
   equals(24, p('(fac 4)'));
-  equals(120, p('(fac 4)'));
+  equals(120, p('(fac 5)'));
 });
 
 module('Interpreter');
