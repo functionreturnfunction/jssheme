@@ -406,12 +406,14 @@ var Interpreter = {
     'eq?': FunctionCompiler.compileFunction(2, function(l, r) {
       switch( true ) {
         case l instanceof List:
-          if( r instanceof List ) {
+          if (r instanceof List) {
             return (l.isNull() && r.isNull()) ||
               (l === r);
           } else {
             return false;
           }
+        case l instanceof Atom:
+          return r instanceof Atom ? l._val == r._val : false;
         default:
           return (l.evaluate() == r.evaluate());
       }
