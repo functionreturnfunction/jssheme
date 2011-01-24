@@ -433,6 +433,25 @@ var Interpreter = {
     })
   },
 
+  /* Compiled Functions */
+  compiledFunctions: {
+    'string-append': function(list) {
+      var sb = [], argc = list.getLen();
+      for (var i = 1; i < argc; ++i) {
+        sb.push(list.objectAt(i).evaluate());
+      }
+      return sb.join('');
+    },
+
+    'string->number': function(list) {
+      // TODO: return false if number cannot be parsed
+      // TODO: return false if radix provided but number is float
+      // TODO: use parseInt if radix provided and number is not float
+      return parseFloat(list.objectAt(1).evaluate(),
+                        list.getLen() > 2 ? list.objectAt(2).evaluate() : 10);
+    }
+  },
+
   /* Class Methods */
   initPrinter: function(printFn) {
     Interpreter._printFn = printFn;
@@ -479,6 +498,10 @@ var Interpreter = {
 
   _userValIsSet: function(str) {
     return (Interpreter._getUserVal(str) != undefined);
+  },
+
+  _getCompiledFunction: function(str) {
+    return Interpreter.compiledFunctions[str];
   },
 
   _getSpecialForm: function(str) {
@@ -528,6 +551,7 @@ var Interpreter = {
       case (match = this._getPrimitive(str)) != null:
       case (match = this._getMathFunction(str)) != null:
       case (match = this._getSpecialForm(str)) != null:
+      case (match = this._getCompiledFunction(str)) != null:
         return match;
     }
   },

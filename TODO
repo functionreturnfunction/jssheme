@@ -2,6 +2,7 @@
   - case
   - (define _form_ _expr_)
   - lambda
+   - mostly done, recursion still iffy
 
 * More primitives
   - boolean?

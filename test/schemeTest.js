@@ -266,6 +266,66 @@ test('`set!\' should set the value of variables which are already defined.', fun
          p('set-tester'), 'Set! form is broken.');
 });
 
+module('Scheme Compiled Functions');
+
+test('`string-append\' should return a string built from all its arguments', function() {
+  equals('foobar', p('(string-append "foo" "bar")'),
+         'Failed to build two part string');
+  equals('foobarbaz', p('(string-append "foo" "bar" "baz")'),
+         'Failed to build three part string');
+});
+
+test('`string->number\' should convert the given string to a number using 10 as the default radix', function() {
+  equals(1, p('(string->number "1")'),
+         'Error parsing number with the default radix');
+  equals(5, p('(string->number "5")'),
+         'Error parsing number with the default radix');
+  equals(10, p('(string->number "10")'),
+         'Error parsing number with the default radix');
+});
+
+test('`string->number\' should convert the given string to a number using the given radix', function() {
+  // base 2
+  equals(1, p('(string->number "1" 2)'),
+         'Error parsing number with radix of 2');
+  equals(5, p('(string->number "101" 2)'),
+         'Error parsing number with radix of 2');
+  equals(10, p('(string->number "1010" 2)'),
+         'Error parsing number with radix of 2');
+  equals(16, p('(string->number "10000" 2)'),
+         'Error parsing number with radix of 2');
+
+  // base 8
+  equals(1, p('(string->number "1" 8)'),
+         'Error parsing number with radix of 8');
+  equals(5, p('(string->number "5" 8)'),
+         'Error parsing number with radix of 8');
+  equals(10, p('(string->number "12" 8)'),
+         'Error parsing number with radix of 8');
+  equals(16, p('(string->number "20" 8)'),
+         'Error parsing number with radix of 8');
+
+  // base 10
+  equals(1, p('(string->number "1" 2)'),
+         'Error parsing number with radix of 10');
+  equals(5, p('(string->number "5" 2)'),
+         'Error parsing number with radix of 10');
+  equals(10, p('(string->number "1010" 2)'),
+         'Error parsing number with radix of 10');
+  equals(16, p('(string->number "16" 10)'),
+         'Error parsing number with radix of 10');
+
+  // base 16
+  equals(1, p('(string->number "1" 2)'),
+         'Error parsing number with radix of 16');
+  equals(5, p('(string->number "101" 2)'),
+         'Error parsing number with radix of 16');
+  equals(10, p('(string->number "1010" 2)'),
+         'Error parsing number with radix of 16');
+  equals(16, p('(string->number "10" 16)'),
+         'Error parsing number with radix of 16');
+});
+
 module('Lambda Recursion');
 
 test('Recursive exponent function', function() {
