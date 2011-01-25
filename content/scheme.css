@@ -1,0 +1,16 @@
+#txtInput {
+  width: 100%;
+  height: 100px;
+}
+
+.bold {
+  font-weight: bold
+}
+
+input.button {
+  width: 140px;
+}
+
+#txtRunCount {
+  width: 50px;
+}

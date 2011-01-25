@@ -31,7 +31,8 @@ List.prototype.appendList = function(list) {
 };
 
 List.prototype.subList = function(from, to) {
-  return new List(this.level + 1, this._arr.slice(from, to), this.quoted);
+  return new List(this.level + 1, this._arr.slice(from, to), this.quoted,
+                  this.scope);
 };
 
 List.prototype.getLen = function() {
@@ -302,11 +303,12 @@ var Interpreter = {
       var scope = new Scope();
       var bindings = list.objectAt(1);
       list = list.subList(2, list.getLen());
-      var cur;
+      var cur, val;
       for( var i = 0, len = bindings.getLen(); i < len; ++i ) {
         cur = bindings.objectAt(i);
-        scope.setValue(cur.objectAt(0),
-                       cur.objectAt(1).evaluate());
+        val = cur.objectAt(1);
+        val.scope = list.scope;
+        scope.setValue(cur.objectAt(0), val.evaluate());
       }
       for( var i = 0, len = list.getLen(); i < len; ++i ) {
         cur = list.objectAt(i);
@@ -391,10 +393,14 @@ var Interpreter = {
     }),
 
     'car': FunctionCompiler.compileFunction(1, function(list) {
+      // list could be an atom representing a variable which stores a list
+      list = list instanceof List ? list : list.evaluate();
       return list.objectAt(0);
     }),
 
     'cdr': FunctionCompiler.compileFunction(1, function(list) {
+      // list could be an atom representing a variable which stores a list
+      list = list instanceof List ? list : list.evaluate();
       return list.subList(1, list.getLen());
     }),
 
@@ -406,14 +412,12 @@ var Interpreter = {
     'eq?': FunctionCompiler.compileFunction(2, function(l, r) {
       switch( true ) {
         case l instanceof List:
-          if (r instanceof List) {
+          if( r instanceof List ) {
             return (l.isNull() && r.isNull()) ||
               (l === r);
           } else {
             return false;
           }
-        case l instanceof Atom:
-          return r instanceof Atom ? l._val == r._val : false;
         default:
           return (l.evaluate() == r.evaluate());
       }
@@ -637,11 +641,16 @@ var Interpreter = {
           }
           break;
         case chars.space:
-          tryAppend();
-          quoted = false;
-          ptrs.head++;
-          ptrs.tail = ptrs.head;
-          break;
+          if (!readingString) {
+            tryAppend();
+            quoted = false;
+            ptrs.head++;
+            ptrs.tail = ptrs.head;
+            break;
+          } else {
+            ptrs.head++;
+            break;
+          }
         case chars.singleQuote:
           quoted = true;
           ptrs.head++;
@@ -654,13 +663,16 @@ var Interpreter = {
         default:
           while( ptrs.head++ < ptrs.max ) {
             curChar = this._getCurChar();
-            if ((readingString && curChar == chars.doubleQuote) ||
-                (!readingString && (curChar == chars.space ||
-                                    curChar == chars.closeParens))) {
+            if (readingString && curChar == chars.doubleQuote) {
+              readingString = false;
+              ptrs.head++;
+              break;
+            } else if (!readingString && (curChar == chars.space ||
+                                    curChar == chars.closeParens)) {
               break;
             }
           }
-          break;
+        break;
       }
     }
     if( ptrs.head > ptrs.tail ) {
