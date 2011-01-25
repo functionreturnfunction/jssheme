@@ -64,7 +64,7 @@ List._copyAndEvalArr = function(arr, scope) {
     ret = new Atom(ret, false, scope);
   }
   ret = [ret.evaluate()];
-  for( var i = 1, len = arr.length; i < len; ++i ) {
+  for (var i = 1, len = arr.length; i < len; ++i) {
     curItem = arr[i];
     // TODO:
     // test this vs. dynamically appending
@@ -79,7 +79,7 @@ List._copyAndEvalArr = function(arr, scope) {
 
 /* Priviledged Methods */
 List._appendList = function(to, from) {
-  for( var i = from.getLen() - 1; i >= 0; --i ) {
+  for (var i = from.getLen() - 1; i >= 0; --i) {
     to.prepend(from.itemAt(i));
   }
   return to;
@@ -87,7 +87,7 @@ List._appendList = function(to, from) {
 
 List._toString = function(arr) {
   var sb = ['('];
-  for( var i = 0, len = arr.length - 1; i < len; ++i ) {
+  for (var i = 0, len = arr.length - 1; i < len; ++i) {
     sb.push(arr[i].toString())
     sb.push(' ');
   }
@@ -102,7 +102,7 @@ List._evaluate = function(arr, that) {
 
 List._objectAt = function(arr, i, scope) {
   var obj = arr[i];
-  switch( true ) {
+  switch (true) {
     case obj instanceof Atom:
     case obj instanceof List:
       return obj;
@@ -147,10 +147,10 @@ Scope.prototype.setValue = function(str, val) {
 
 /* Static Methods */
 Scope._setValue = function(values, str, val) {
-  switch( true ) {
+  switch (true) {
     case val instanceof Atom:
     case val instanceof List:
-      if( val.quoted ) {
+      if (val.quoted) {
         values[str] = val.evaluate();
         break;
       }
@@ -210,16 +210,16 @@ var Interpreter = {
     '-': function(x, y) { return x - y; },
     '*': function(x, y) { return x * y; },
     '/': function(x, y) { return x / y; },
-    '=': function(x, y) { return x == y },
-    '<': function(x, y) { return x < y },
-    '>': function(x, y) { return x > y }
+    '=': function(x, y) { return x == y; },
+    '<': function(x, y) { return x < y; },
+    '>': function(x, y) { return x > y; }
   },
 
   /* Defined Special Forms */
   specialForms: {
     'and': function(list) {
-      for( var i = 1, len = list.getLen(); i < len; ++i ) {
-        if( !list.objectAt(i).evaluate() ) {
+      for (var i = 1, len = list.getLen(); i < len; ++i) {
+        if (!list.objectAt(i).evaluate()) {
           return false;
         }
       }
@@ -228,7 +228,7 @@ var Interpreter = {
 
     'begin': function(list) {
       var i, last;
-      for( i = 1, last = list.getLen() - 1; i < last; ++i ) {
+      for (i = 1, last = list.getLen() - 1; i < last; ++i) {
         list.objectAt(i).evaluate();
       }
       return list.objectAt(last).evaluate();
@@ -237,13 +237,13 @@ var Interpreter = {
     'case': function(list) {
       var val = list.objectAt(1).evaluate();
       var cur, cList;
-      for( var i = 2, len = list.getLen(); i < len; ++i ) {
+      for (var i = 2, len = list.getLen(); i < len; ++i) {
         cur = list.objectAt(i);
         cList = cur.objectAt(0);
-        switch( true ) {
+        switch (true) {
           case cList instanceof List:
-            for( var j = 0, len2 = cList.getLen(); j < len2; ++j ) {
-              if( cList.objectAt(j).evaluate() == val ) {
+            for (var j = 0, len2 = cList.getLen(); j < len2; ++j) {
+              if (cList.objectAt(j).evaluate() == val) {
                 return cur.objectAt(1).evaluate();
               }
             }
@@ -256,11 +256,11 @@ var Interpreter = {
 
     'cond': function(list) {
       var cur, l, r;
-      for( var i = 1, len = list.getLen(); i < len; ++i ) {
+      for (var i = 1, len = list.getLen(); i < len; ++i) {
         cur = list.objectAt(i);
         l = cur.objectAt(0);
         r = cur.objectAt(1);
-        switch( true ) {
+        switch (true) {
           case l == 'else':
             return r;
           case l.evaluate():
@@ -274,7 +274,7 @@ var Interpreter = {
     },
 
     'if': function(list) {
-      switch( true ) {
+      switch (true) {
         case list.objectAt(1).evaluate():
           return list.objectAt(2).evaluate();
         case list.getLen() == 4:
@@ -289,10 +289,10 @@ var Interpreter = {
       return FunctionCompiler.compileFunction(argc, function() {
         body.scope = new Scope();
         for (var i = 0; i < argc; ++i) {
-          var name = argList.objectAt(i), value = arguments[i].evaluate();
-          // if (name == 'i') {
-          //   console.log('setting var i to ' + value.toString());
-          // }
+          var name = argList.objectAt(i).toString(), value = arguments[i].evaluate();
+          if (name == 'i') {
+            console.log('setting i to ' + value.toString());
+          }
           body.scope.setValue(name, value);
         }
         return body.evaluate();
@@ -304,16 +304,16 @@ var Interpreter = {
       var bindings = list.objectAt(1);
       list = list.subList(2, list.getLen());
       var cur, val;
-      for( var i = 0, len = bindings.getLen(); i < len; ++i ) {
+      for (var i = 0, len = bindings.getLen(); i < len; ++i) {
         cur = bindings.objectAt(i);
         val = cur.objectAt(1);
         val.scope = list.scope;
         scope.setValue(cur.objectAt(0), val.evaluate());
       }
-      for( var i = 0, len = list.getLen(); i < len; ++i ) {
+      for (var i = 0, len = list.getLen(); i < len; ++i) {
         cur = list.objectAt(i);
         cur.scope = scope;
-        if( i == (len - 1) ) {
+        if (i == (len - 1)) {
           return cur.evaluate();
         } else {
           cur.evaluate();
@@ -326,17 +326,17 @@ var Interpreter = {
       var bindings = list.objectAt(1);
       list = list.subList(2, list.getLen());
       var cur, curVal;
-      for( var i = 0, len = bindings.getLen(); i < len; ++i ) {
+      for (var i = 0, len = bindings.getLen(); i < len; ++i) {
         cur = bindings.objectAt(i);
         curVal = cur.objectAt(1);
         curVal.scope = scope;
         scope.setValue(cur.objectAt(0),
                        curVal.evaluate());
       }
-      for( var i = 0, len = list.getLen(); i < len; ++i ) {
+      for (var i = 0, len = list.getLen(); i < len; ++i) {
         cur = list.objectAt(i);
         cur.scope = scope;
-        if( i == (len - 1) ) {
+        if (i == (len - 1)) {
           return cur.evaluate();
         } else {
           cur.evaluate();
@@ -345,8 +345,8 @@ var Interpreter = {
     },
 
     'or': function(list) {
-      for( var i = 1, len = list.getLen(); i < len; ++i ) {
-        if( list.objectAt(i).evaluate() ) {
+      for (var i = 1, len = list.getLen(); i < len; ++i) {
+        if (list.objectAt(i).evaluate()) {
           return true;
         }
       }
@@ -355,7 +355,7 @@ var Interpreter = {
 
     'quote': function(list) {
       var val = list.objectAt(1);
-      switch( true ) {
+      switch (true) {
         case val instanceof List:
         case val instanceof Atom:
           val.quoted = true;
@@ -367,7 +367,7 @@ var Interpreter = {
 
     'set!': function(list) {
       var name = list.objectAt(1).toString();
-      if( !Interpreter._userValIsSet(name) ) {
+      if (!Interpreter._userValIsSet(name)) {
         throw new InterpreterExceptions.variableNotSet(name);
       }
       // do not evaluate the object,
@@ -410,9 +410,9 @@ var Interpreter = {
     }),
 
     'eq?': FunctionCompiler.compileFunction(2, function(l, r) {
-      switch( true ) {
+      switch (true) {
         case l instanceof List:
-          if( r instanceof List ) {
+          if (r instanceof List) {
             return (l.isNull() && r.isNull()) ||
               (l === r);
           } else {
@@ -426,7 +426,7 @@ var Interpreter = {
     }),
 
     'null?': FunctionCompiler.compileFunction(1, function(obj) {
-      if( obj instanceof List ) {
+      if (obj instanceof List) {
         return obj.isNull();
       }
       return false;
@@ -511,7 +511,7 @@ var Interpreter = {
   },
 
   _setUserVal: function(str, val) {
-    switch( true ) {
+    switch (true) {
       case (val instanceof List && val.quoted):
       case (val == undefined):
         Interpreter.userVals[str] = val;
@@ -540,8 +540,12 @@ var Interpreter = {
 
   _doMath: function(fn, list) {
     var ret = list.objectAt(1).evaluate();
-    for( var i = 2, len = list.getLen(); i < len; ++i ) {
-      ret = fn(ret, list.objectAt(i).evaluate());
+    for (var i = 2, len = list.getLen(); i < len; ++i) {
+      var left = ret, right = list.objectAt(i).evaluate();
+      if (fn == Interpreter.mathFuncs['+']) {
+        console.log('adding ' + left + ' to ' + right.toString());
+      }
+      ret = fn(left, right);
     }
     return ret;
   },
@@ -557,7 +561,7 @@ var Interpreter = {
 
   _getLiteral: function(str) {
     var match;
-    switch( true ) {
+    switch (true) {
       case /^-?\d+\.\d+$/.test(str):
         return parseFloat(str, 10);
       case /^-?\d+$/.test(str):
@@ -571,7 +575,7 @@ var Interpreter = {
 
   _getDefined: function(str, scope) {
     var match;
-    switch( true ) {
+    switch (true) {
       case (scope) && (match = scope.getValue(str)) != null:
       case (match = this._getUserVal(str)) != null:
       case (match = this._getPrimitive(str)) != null:
@@ -584,7 +588,7 @@ var Interpreter = {
 
   _evalAtom: function(str, scope) {
     var match;
-    switch( true ) {
+    switch (true) {
       case (match = this._getLiteral(str)) != null:
       case (match = this._getDefined(str, scope)) != null:
         return match;
@@ -602,23 +606,23 @@ var Interpreter = {
 
 
     function tryAppend() {
-      if( ptrs.head > ptrs.tail ) {
-        if( !list ) {
+      if (ptrs.head > ptrs.tail) {
+        if (!list) {
           list = new List(Interpreter.level + 1, null, quoted);
         }
         list.append(quoted ? new Atom(curStr, quoted) : curStr);
       }
     }
 
-    while( ptrs.head < ptrs.max ) {
+    while (ptrs.head < ptrs.max) {
       curChar = Interpreter._getCurChar();
       curStr = Interpreter._getCurStr();
-      switch( curChar ) {
+      switch (curChar) {
         case chars.openParens:
           Interpreter.level++;
           ptrs.head++;
           ptrs.tail = ptrs.head;
-          switch( true ) {
+          switch (true) {
             case !list:
               list = new List(Interpreter.level, null, quoted);
               break;
@@ -633,7 +637,7 @@ var Interpreter = {
           tryAppend();
           ptrs.head++;
           ptrs.tail = ptrs.head;
-          switch( true ) {
+          switch (true) {
             case !list:
               list = new List(Interpreter.level + 1, null, quoted);
               break;
@@ -654,7 +658,7 @@ var Interpreter = {
           break;
         case chars.doubleQuote:
           // 'readString()'
-          while( ptrs.head++ < ptrs.max ) {
+          while (ptrs.head++ < ptrs.max) {
             curChar = this._getCurChar();
             if (curChar == chars.doubleQuote) {
               // need to move past the end double quote
@@ -665,7 +669,7 @@ var Interpreter = {
           break;
         default:
           // 'readAtom()'
-          while( ptrs.head++ < ptrs.max ) {
+          while (ptrs.head++ < ptrs.max) {
             curChar = this._getCurChar();
             if (curChar == chars.space || curChar == chars.closeParens) {
               break;
@@ -674,10 +678,10 @@ var Interpreter = {
         break;
       }
     }
-    if( ptrs.head > ptrs.tail ) {
-      if( !list ) {
+    if (ptrs.head > ptrs.tail) {
+      if (!list) {
         return new Atom(Interpreter._getCurStr(), quoted);
-      } else if( quoted ) {
+      } else if (quoted) {
         list.append(new Atom(Interpreter._getCurStr(), quoted));
       } else {
         list.append(Interpreter._getCurStr());
@@ -691,7 +695,8 @@ var Interpreter = {
     Interpreter.str = str;
     Interpreter._initPtrs();
     Interpreter.level = 0;
-    return Interpreter._run().evaluate();
+    var result = Interpreter._run();
+    return result.evaluate();
   },
 
   compileFunction: function(argc, fn) {
