@@ -418,6 +418,8 @@ var Interpreter = {
           } else {
             return false;
           }
+        case l instanceof Atom:
+          return r instanceof Atom ? l.toString() == r.toString() : false;
         default:
           return (l.evaluate() == r.evaluate());
       }
