@@ -378,9 +378,9 @@ test('Recursive exponent function', function() {
 });
 
 test('Recursive fibonacci function', function() {
+  // basic form, doesn't work for some reason.
 //  p('(define fib (lambda (i) (if (< i 2) i (+ (fib (- i 1)) (fib (- i 2))))))');
-  // for printing
-  p('(define fib (lambda (i) (begin (pp (string-append "running with i = " (number->string i))) (if (< i 2) i (let ((first (fib (- i 1))) (second (fib (- i 2)))) (begin (pp (string-append "adding " (number->string first) " to " (number->string second))) (+ first second)))))))');
+  p('(define fib (lambda (i) (if (< i 2) i (let ((first (fib (- i 1))) (second (fib (- i 2)))) (+ first second)))))');
   equals(2, p('(fib 3)'), 'Recursive Fibonacci function failed.');
   equals(55, p('(fib 10)'), 'Recursive Fibonacci function failed.');
   equals(89, p('(fib 11)'), 'Recursive Fibonacci function failed.');
