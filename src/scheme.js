@@ -596,7 +596,6 @@ var Interpreter = {
     var chars = Interpreter.specialChars;
     var quoted = quoted || false;
     var list = list instanceof List ? list : null;
-    var readingString = false;
     var curChar, curStr;
 
 
@@ -641,34 +640,32 @@ var Interpreter = {
           }
           break;
         case chars.space:
-          if (!readingString) {
-            tryAppend();
-            quoted = false;
-            ptrs.head++;
-            ptrs.tail = ptrs.head;
-            break;
-          } else {
-            ptrs.head++;
-            break;
-          }
+          tryAppend();
+          quoted = false;
+          ptrs.head++;
+          ptrs.tail = ptrs.head;
+          break;
         case chars.singleQuote:
           quoted = true;
           ptrs.head++;
           ptrs.tail = ptrs.head;
           break;
         case chars.doubleQuote:
-          readingString = !readingString;
-          ptrs.head++;
-          break;
-        default:
+          // 'readString()'
           while( ptrs.head++ < ptrs.max ) {
             curChar = this._getCurChar();
-            if (readingString && curChar == chars.doubleQuote) {
-              readingString = false;
+            if (curChar == chars.doubleQuote) {
+              // need to move past the end double quote
               ptrs.head++;
               break;
-            } else if (!readingString && (curChar == chars.space ||
-                                    curChar == chars.closeParens)) {
+            }
+          }
+          break;
+        default:
+          // 'readAtom()'
+          while( ptrs.head++ < ptrs.max ) {
+            curChar = this._getCurChar();
+            if (curChar == chars.space || curChar == chars.closeParens) {
               break;
             }
           }
