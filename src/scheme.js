@@ -292,8 +292,8 @@ var Interpreter = {
         body.scope = new Scope();
         for (var i = 0; i < argc; ++i) {
           var name = argList.objectAt(i).toString(), value = arguments[i].evaluate();
-          if (name == 'a') {
-            console.log('setting a to ' + value.toString());
+          if (name == 'a' || name == 'lat') {
+            console.log('setting ' + name + ' to ' + value.toString());
           }
           body.scope.setValue(name, value);
         }
@@ -407,7 +407,7 @@ var Interpreter = {
     }),
 
     'cons': FunctionCompiler.compileFunction(2, function(a, list) {
-      return list.evaluate().prepend(a);
+      return list.evaluate().prepend(a.evaluate());
     }),
 
     'eq?': FunctionCompiler.compileFunction(2, function(l, r) {

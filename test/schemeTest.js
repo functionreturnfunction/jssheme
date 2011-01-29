@@ -110,6 +110,12 @@ test('`cons\' prepends items onto lists', function() {
   equals('(foo bar)',
          p('(cons \'foo (cdr \'(foobar bar)))'),
          'Consing onto list which needs to be evaluated is broken.');
+  equals('(foo)', 
+         p('(cons (car \'(foo)) \'())'),
+         'Consing item which needs to be evaluated onto list is broken.');
+  equals('(foo bar)',
+         p('(cons (car \'(foo)) (cdr \'(foo bar)))'),
+         'Consing item which needs to be evaluated onto list which needs to be evaluated is broken.');
 });
 
 test('`eq?\' returns true if arguments are equal, else false', function() {
@@ -422,7 +428,10 @@ test('Recursive factorial function', function() {
 
 test('Little Schemer rember function', function() {
   p('(define rember (lambda (a lat) (cond ((null? lat) lat) ((eq? a (car lat)) (cdr lat)) (else (cons (car lat) (rember a (cdr lat)))))))');
-  equals('(foo bar)', p('(rember \'foo \'(foo bar))'));
+  equals('()', p('(rember \'foo \'())'));
+  equals('()', p('(rember \'foo \'(foo))'));
+  equals('(bar)', p('(rember \'foo \'(bar))'));
+  equals('(bar)', p('(rember \'foo \'(foo bar))'));
 });
 
 module('Interpreter');
