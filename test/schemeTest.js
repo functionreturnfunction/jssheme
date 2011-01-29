@@ -68,11 +68,89 @@ test('`apply\' should apply cdr of argument list to car of argument list', funct
          p('(append \'(1 2 3) \'(4 5 6))'), 'Append appears broken.');
 });
 
-test('Basic arithmetic operations', function() {
-  equals(10, p('(+ 1 2 3 4)'), 'Addition is broken');
-  equals(15, p('(- 100 50 25 10)'), 'Subtraction is broken');
-  equals(24, p('(* 1 2 3 4)'), 'Multiplication is broken');
+// meta test building:
+for (var x in Interpreter.mathFuncs) {
+  // '/' is a special case, see TODO file
+  if (x == '/') {
+    continue;
+  }
+
+  var argList = [
+    [2, 2],
+    [1, 2, 3, 4],
+    [4, 3, 2, 1]
+  ];
+  var fnName;
+  switch (x) {
+    case '+':
+      fnName = 'add';
+      break;
+    case '-':
+      fnName = 'subtract';
+      break;
+    case '*':
+      fnName = 'multiply';
+      break;
+  }
+
+  var doMath = function(fn, args) {
+    var ret = args[0];
+    for (var i = 1, len = args.length; i < len; ++i) {
+      ret = Interpreter.mathFuncs[fn](ret, args[i]);
+    }
+    return ret;
+  }
+
+  test(x + ' function should ' + fnName + ' all of its arguments together', function() {
+    for (var i = 0, len = argList.length; i < len; ++i) {
+      var sb = ['(', x];
+      for (var j = 0, jLen = argList[i].length; j < jLen; ++j) {
+        sb.push(' ');
+        sb.push(argList[i][j]);
+      }
+      var code = sb.join('') + ')';
+
+      equals(doMath(x, argList[i]), p(code),
+             'Failed to evaluate ' + code + ' properly.');
+    }
+  });
+
+  argList = [
+    ['(car \'(4))', '(car \'(4))'],
+    ['(car \'(4))', '(car \'(2))'],
+    ['(car \'(2))', '(car \'(4))']
+  ];
+
+  doMath = function(fn, args) {
+    var ret = parseInt(args[0].match(/\((\d+)\)/, '\1')[1]);
+    var cur;
+    for (var i = 1, len = args.length; i < len; ++i) {
+      cur = parseInt(args[i].match(/\((\d+)\)/, '\1')[1]);
+      ret = Interpreter.mathFuncs[fn](ret, cur);
+    }
+    return ret;
+  };
+
+  test(x + ' function should evaluate each of its arguments and then ' + fnName + ' them all together', function() {
+    for (var i = 0, len = argList.length; i < len; ++i) {
+      var sb = ['(', x];
+      for (var j = 0, jLen = argList[i].length; j < jLen; ++j) {
+        sb.push(' ');
+        sb.push(argList[i][j]);
+      }
+      var code = sb.join('') + ')';
+
+      equals(doMath(x, argList[i]), p(code),
+             'Failed to evaluate ' + code + ' properly.');
+    }
+  });
+}
+
+test('Basic division', function() {
   equals(1, p('(/ 64 8 4 2)'), 'Division is broken');
+});
+
+test('Basic equality', function() {
   ok(p('(= 1 1)'), 'Numeric equality is broken');
   ok(!p('(= 1 2)'), 'Numeric equality is broken');
   ok(p('(< 1 2)'), 'Less than operator is broken');
@@ -271,7 +349,7 @@ test('`quote\' should return its argument quoted', function() {
          p('(quote (((foo) bar) (baz)))'), 'Multi level quote failed.');
 });
 
-test('`set!\' should set the value of variables which are already defined.', function() {
+test('`set!\' should set the value of variables which are already defined', function() {
   p('(define set-tester 1)');
   equals(1, p('set-tester'), 'Define form seems to have failed.');
   equals('set-tester',

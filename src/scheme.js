@@ -210,7 +210,13 @@ var Interpreter = {
     '+': function(x, y) { return x + y; },
     '-': function(x, y) { return x - y; },
     '*': function(x, y) { return x * y; },
-    '/': function(x, y) { return x / y; },
+    '/': function(x, y) { return x / y; }
+  },
+
+  // done so that all equality operations
+  // work in a uniform manner, from the
+  // same equality runner function.
+  equalityFuncs: {
     '=': function(x, y) { return x == y; },
     '<': function(x, y) { return x < y; },
     '>': function(x, y) { return x > y; }
@@ -542,13 +548,24 @@ var Interpreter = {
 
   _doMath: function(fn, list) {
     var ret = list.objectAt(1).evaluate();
+    ret = ret instanceof Atom ? ret.evaluate() : ret;
     for (var i = 2, len = list.getLen(); i < len; ++i) {
       var left = ret;
       var right = list.objectAt(i);
       if (fn == Interpreter.mathFuncs['+']) {
         console.log('adding ' + left + ' to ' + right.toString());
       }
-      ret = fn(left, right.evaluate());
+      right = right.evaluate();
+      right = right instanceof Atom ? right.evaluate() : right;
+      ret = fn(left, right);
+    }
+    return ret;
+  },
+
+  _doEquality: function(fn, list) {
+    var ret = list.objectAt(1).evaluate();
+    for (var i = 2, len = list.getLen(); i < len; ++i) {
+      ret = fn(ret, list.objectAt(i).evaluate());
     }
     return ret;
   },
@@ -558,6 +575,15 @@ var Interpreter = {
     return (typeof(fn) != 'function') ? fn : (function(fn) {
       return function(list) {
         return Interpreter._doMath(fn, list);
+      };
+    })(fn);
+  },
+
+  _getEqualityFunction: function(str) {
+    var fn = Interpreter.equalityFuncs[str];
+    return (typeof(fn) != 'function') ? fn : (function(fn) {
+      return function(list) {
+        return Interpreter._doEquality(fn, list);
       };
     })(fn);
   },
@@ -583,6 +609,7 @@ var Interpreter = {
       case (match = this._getUserVal(str)) != null:
       case (match = this._getPrimitive(str)) != null:
       case (match = this._getMathFunction(str)) != null:
+      case (match = this._getEqualityFunction(str)) != null:
       case (match = this._getSpecialForm(str)) != null:
       case (match = this._getCompiledFunction(str)) != null:
         return match;
