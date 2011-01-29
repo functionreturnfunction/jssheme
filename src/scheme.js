@@ -19,7 +19,8 @@ List.prototype.isNull = function() {
 };
 
 List.prototype.prepend = function(val) {
-  return this._arr.unshift(val);
+  this._arr.unshift(val);
+  return this;
 };
 
 List.prototype.append = function(val) {
@@ -405,8 +406,7 @@ var Interpreter = {
     }),
 
     'cons': FunctionCompiler.compileFunction(2, function(a, list) {
-      list.prepend(a);
-      return list;
+      return list.evaluate().prepend(a);
     }),
 
     'eq?': FunctionCompiler.compileFunction(2, function(l, r) {
@@ -541,11 +541,12 @@ var Interpreter = {
   _doMath: function(fn, list) {
     var ret = list.objectAt(1).evaluate();
     for (var i = 2, len = list.getLen(); i < len; ++i) {
-      var left = ret, right = list.objectAt(i).evaluate();
+      var left = ret;
+      var right = list.objectAt(i);
       if (fn == Interpreter.mathFuncs['+']) {
         console.log('adding ' + left + ' to ' + right.toString());
       }
-      ret = fn(left, right);
+      ret = fn(left, right.evaluate());
     }
     return ret;
   },

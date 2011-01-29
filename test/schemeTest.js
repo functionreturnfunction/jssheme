@@ -107,6 +107,9 @@ test('`cons\' prepends items onto lists', function() {
          p('(cons \'foobar \'())'), 'Consing onto empty list is broken.');
   equals('(foo bar)',
          p('(cons \'foo \'(bar))'), 'Consing onto non-empty list is broken.');
+  equals('(foo bar)',
+         p('(cons \'foo (cdr \'(foobar bar)))'),
+         'Consing onto list which needs to be evaluated is broken.');
 });
 
 test('`eq?\' returns true if arguments are equal, else false', function() {
@@ -394,6 +397,16 @@ test('Recursive add function', function() {
   equals(9, p('(add 4 5)'));
   equals(16, p('(add 8 8)'));
   equals(17, p('(add 8 9)'));
+});
+
+test('Recursive multiplication function', function() {
+  p('(define mult (lambda (x y) (if (= 1 y) x (+ x (mult x (- y 1))))))');
+  equals(4, p('(mult 2 2)'));
+  equals(6, p('(mult 2 3)'));
+  equals(9, p('(mult 3 3)'));
+  equals(12, p('(mult 3 4)'));
+  equals(16, p('(mult 4 4)'));
+  equals(20, p('(mult 4 5)'));
 });
 
 test('Recursive factorial function', function() {
