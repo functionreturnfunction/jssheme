@@ -2,8 +2,13 @@ var console = {
   log: print
 };
 
-load('src/scheme.js');
+load('src/types.js');
+load('src/helpers.js');
+load('src/interpreter.js');
 load('lib/qunitRhino.js');
-load('test/schemeTest.js');
+load('test/testHelpers.js');
+load('test/unit/typesTest.js');
+load('test/unit/helpersTest.js');
+load('test/integration/schemeTest.js');
 
 new QUnit.ConsolePrinter().print();

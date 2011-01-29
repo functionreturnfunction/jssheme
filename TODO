@@ -1,3 +1,7 @@
+* Rakefile
+  - Need to 'build' the project by concatenating the scripts together in the
+    proper order.
+
 * Types
   - Need a special type to handle uneven division, such that '(/ 1 2)' is
     internally represented as '1/2' until it's coerced into a floating point
@@ -49,4 +53,3 @@
   - need to make an instantiatable class out of it
 
   - will need to be able to dump and load state (JSON?)
-
