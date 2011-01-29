@@ -129,6 +129,8 @@ test('`null?\' returns true if argument is the null list, else false', function(
      'Null check function failed, numbers are NOT equal to the null list.');
   ok(!p('(null? (+ 1 2))'),
      'Null check function failed.');
+  ok(p('(null? (cdr \'(foo)))'), 
+     'Null check on argument which needs to be evaluated failed.');
 });
 
 test('`number?\' return true if argument is a number, else false', function() {
@@ -416,6 +418,11 @@ test('Recursive factorial function', function() {
   equals(6, p('(fac 3)'));
   equals(24, p('(fac 4)'));
   equals(120, p('(fac 5)'));
+});
+
+test('Little Schemer rember function', function() {
+  p('(define rember (lambda (a lat) (cond ((null? lat) lat) ((eq? a (car lat)) (cdr lat)) (else (cons (car lat) (rember a (cdr lat)))))))');
+  equals('(foo bar)', p('(rember \'foo \'(foo bar))'));
 });
 
 module('Interpreter');

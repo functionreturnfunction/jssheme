@@ -261,10 +261,11 @@ var Interpreter = {
         cur = list.objectAt(i);
         l = cur.objectAt(0);
         r = cur.objectAt(1);
+        l.scope = list.scope;
         switch (true) {
           case l == 'else':
-            return r;
           case l.evaluate():
+            r.scope = list.scope;
             return r.evaluate();
         }
       }
@@ -291,8 +292,8 @@ var Interpreter = {
         body.scope = new Scope();
         for (var i = 0; i < argc; ++i) {
           var name = argList.objectAt(i).toString(), value = arguments[i].evaluate();
-          if (name == 'i') {
-            console.log('setting i to ' + value.toString());
+          if (name == 'a') {
+            console.log('setting a to ' + value.toString());
           }
           body.scope.setValue(name, value);
         }
@@ -426,6 +427,7 @@ var Interpreter = {
     }),
 
     'null?': FunctionCompiler.compileFunction(1, function(obj) {
+      obj = obj.evaluate();
       if (obj instanceof List) {
         return obj.isNull();
       }
