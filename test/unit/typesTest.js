@@ -1,36 +1,37 @@
-module('List');
+module('List', {
+  setup: function() {
+    this.level = 666;
+    this.arr = ['foo'];
+    this.quoted = new Object();
+    this.scope = new Object();
+    this.target = new List(this.level, this.arr, this.quoted, this.scope);
+  }
+});
 
 test('Empty list should be created with proper values', function() {
-  var list = new List();
-  equals(0, list.level,
+  this.target = new List();
+  equals(0, this.target.level,
          'List created with no arguments should always have a level of 0.');
-  ok(list._arr instanceof Array,
+  ok(this.target._arr instanceof Array,
      'List created with no arguments should create its own inner _arr.');
-  equals(0, list._arr.length,
+  equals(0, this.target._arr.length,
         'List created with no arguments should use a default level of 0.');
-  same(false, list.quoted,
+  same(false, this.target.quoted,
      'List created with no arguments should default the quoted property to false.');
-  equals(null, list.scope,
+  equals(null, this.target.scope,
          'List created with no arguments should not have a scope.');
-  ok(list.isNull(), 'List created with no arguments should always be null.');
-  equals('()', list.toString(), 'List.toString() seems to be broken.');
+  ok(this.target.isNull(), 'List created with no arguments should always be null.');
+  equals('()', this.target.toString(), 'List#toString() seems to be broken.');
 });
 
 test('Constructor should set values from arguments', function() {
-  var level = 666;
-  var arr = [];
-  var quoted = new Object();
-  var scope = new Object();
-
-  var target = new List(level, arr, quoted, scope);
-
-  equals(level, target.level,
+  equals(this.level, this.target.level,
          'Constructor should set level value from argument.');
-  same(arr, target._arr,
+  same(this.arr, this.target._arr,
        'Constructor should set inner _arr from argument.');
-  same(quoted, target.quoted,
+  same(this.quoted, this.target.quoted,
        'Constructor should set quoted value from argument.');
-  same(scope, target.scope,
+  same(this.scope, this.target.scope,
        'Constructor should set scope from argument.');
 });
 
