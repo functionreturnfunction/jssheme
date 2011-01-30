@@ -4,8 +4,6 @@ var List = function(level, arr, quoted, scope) {
   this.level = typeof(level||null) == 'number' ? level : 0;
   this.quoted = quoted || false;
   this.scope = scope;
-
-  return true;
 };
 
 /* Private Methods */
@@ -24,7 +22,8 @@ List.prototype.prepend = function(val) {
 };
 
 List.prototype.append = function(val) {
-  return this._arr.push(val);
+  this._arr.push(val);
+  return this;
 };
 
 List.prototype.appendList = function(list) {
