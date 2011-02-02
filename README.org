@@ -1,0 +1,48 @@
+#+TITLE: jsscheme
+* About
+  This project is an implementation of the Scheme programming language written
+  in pure version 1.5 Javascript.  The original intent was to create a
+  completely portable, platform-agnostic Scheme implementation, capable of
+  running all of the examples from the book [[http://mitpress.mit.edu/catalog/item/default.asp?ttype=2&tid=4825][The Little Schemer]].
+
+** Implementation
+  It works by first parsing the input code into a hierarical structure of Atom
+  and List objects, and then evaluating the structure from the outside in.
+
+  Global variables are supported, as are localized variables using let and
+  let*.  These forms introduce Scope objects, which are passed down the
+  hierarchy and attached to atoms and lists for their evaluation.
+
+  Lambdas are also supported, and some recursive forms are achievable.  Bearing
+  in mind that each interpreted function call may represent more than one call
+  in Javascript, the recursive addition function defined as:
+#+BEGIN_SRC scheme
+  (define add
+    (lambda (x y)
+      (if (= y 0) x
+        (+ 1 (add x (- y 1))))))
+#+END_SRC
+  will add values up to 1315 in Google Chrome.  Some more complex recursive
+  functions will fail due to a bug that I have yet to track down.  An example is
+  the Fibonacci function defined as:
+#+BEGIN_SRC scheme
+  (define fib
+    (lambda (i)
+      (if (< i 2) i
+        (+ (fib (- i 1))
+           (fib (- i 2))))))
+#+END_SRC
+
+* Usage
+  Point your browser at file:///path/to/project/content/scheme.htm.  Tests will
+  run automatically, click the 'Display Test Results' button to see the results
+  from all unit and integration tests.
+
+  Code in the textarea can be executed either by clicking the 'Execute' button
+  or pressing Enter when the textarea is in focus.  There is no preparser to
+  strip extra whitespace yet, so code must be formatted down to a single line
+  with only the appropriate amount of spacing.
+
+  Tests can also be run from the command line using the Rake task 'test:rhino'.
+  Mozilla Rhino must be installed and available from the current $PATH.  Node.js
+  support is underway, but not working yet.
