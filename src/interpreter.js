@@ -112,9 +112,6 @@ var Interpreter = {
         body.scope = new Scope();
         for (var i = 0; i < argc; ++i) {
           var name = argList.objectAt(i).toString(), value = arguments[i].evaluate();
-          if (name == 'a' || name == 'lat') {
-            console.log('setting ' + name + ' to ' + value.toString());
-          }
           body.scope.setValue(name, value);
         }
         return body.evaluate();
@@ -366,9 +363,6 @@ var Interpreter = {
     for (var i = 2, len = list.getLen(); i < len; ++i) {
       var left = ret;
       var right = list.objectAt(i);
-      if (fn == Interpreter.mathFuncs['+']) {
-        console.log('adding ' + left + ' to ' + right.toString());
-      }
       right = right.evaluate();
       right = right instanceof Atom ? right.evaluate() : right;
       ret = fn(left, right);

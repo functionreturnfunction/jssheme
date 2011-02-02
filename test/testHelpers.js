@@ -1,6 +1,7 @@
 var p = Interpreter.parse;
 
 function doesThrow(fn, message) {
+  QUnit.currentModule.assertions++;
   var thrown = false;
 
   try {
@@ -13,6 +14,7 @@ function doesThrow(fn, message) {
 }
 
 function doesNotThrow(fn, message) {
+  QUnit.currentModule.assertions++;
   var thrown = false;
 
   try {
