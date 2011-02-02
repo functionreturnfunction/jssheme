@@ -240,7 +240,7 @@ var Interpreter = {
             return false;
           }
         case l instanceof Atom:
-          return r instanceof Atom ? l.toString() == r.toString() : false;
+          return l.evaluate().toString() == r.evaluate().toString();
         default:
           return (l.evaluate() == r.evaluate());
       }
