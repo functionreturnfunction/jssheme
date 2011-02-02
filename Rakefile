@@ -11,6 +11,10 @@ namespace :test do
     puts `rhino test/rhinoTest.js`
   end
 
+  task :node do
+    puts `node test/rhinoTest.js`
+  end
+
   task :chrome => 'run:chrome'
 end
 

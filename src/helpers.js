@@ -1,5 +1,5 @@
 /* Class Scope */
-var Scope = function() {
+Scope = function() {
   this._values = {};
 
   return true;
@@ -30,7 +30,7 @@ Scope._setValue = function(values, str, val) {
 };
 
 /* Class FunctionCompiler */
-var FunctionCompiler = function(argc, fn) {
+FunctionCompiler = function(argc, fn) {
   this.argc = argc;
   this.fn = fn;
 

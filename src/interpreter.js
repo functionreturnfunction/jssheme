@@ -1,4 +1,4 @@
-var Interpreter = {
+Interpreter = {
   VALID_RADII: [2, 8, 10, 16],
   /* Class Variables */
   // if this is set, the last thrown
