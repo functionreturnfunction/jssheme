@@ -504,8 +504,13 @@ test('number interpretation', function() {
 });
 
 test('Special characters', function() {
-  equals('(foo bar)', p('\'(foo bar)').toString(), 'Error reading quoted list');
-  equals('foobar', p('\'foobar').toString(), 'Error reading quoted s-expression');
+  equals('(foo bar)', p('\'(foo bar)'), 'Error reading quoted list');
+  equals('foobar', p('\'foobar'), 'Error reading quoted s-expression');
+});
+
+test('Extra whitespace', function() {
+  equals('(foo bar)', p('\'(foo bar) '));
+  equals(6, p('(+ 1\t2\n3)'));
 });
 
 test('Nesting', function() {

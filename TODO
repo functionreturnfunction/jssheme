@@ -41,9 +41,6 @@
   - Implement type checking for existing function and special form implementations
     - using the appropriate messages
 
-* Create preparser
-   - needs to merge & convert whitespace
-
 * Learn and implement associative lists
 
 * Learn and implement list mapping

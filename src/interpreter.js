@@ -11,6 +11,9 @@ Interpreter = {
     openParens: '(',
     closeParens: ')',
     space: ' ',
+    tab: '\t',
+    carriageReturn: '\r',
+    newLine: '\n',
     singleQuote: '\'',
     doubleQuote: '"'
   },
@@ -484,6 +487,9 @@ Interpreter = {
           }
           break;
         case chars.space:
+        case chars.tab:
+        case chars.carriageReturn:
+        case chars.newLine:
           tryAppend();
           quoted = false;
           ptrs.head++;
@@ -509,7 +515,8 @@ Interpreter = {
           // 'readAtom()'
           while (ptrs.head++ < ptrs.max) {
             curChar = this._getCurChar();
-            if (curChar == chars.space || curChar == chars.closeParens) {
+            if ([chars.space, chars.closeParens, chars.newLine, chars.tab, chars.carriageReturn]
+                .indexOf(curChar) > -1) {
               break;
             }
           }

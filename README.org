@@ -39,9 +39,7 @@
   from all unit and integration tests.
 
   Code in the textarea can be executed either by clicking the 'Execute' button
-  or pressing Enter when the textarea is in focus.  There is no preparser to
-  strip extra whitespace yet, so code must be formatted down to a single line
-  with only the appropriate amount of spacing.
+  or pressing Enter when the textarea is in focus.
 
   Tests can also be run from the command line using the Rake task 'test:rhino'.
   Mozilla Rhino must be installed and available from the current $PATH.  Node.js
