@@ -1,4 +1,4 @@
-var CODE = '(define fib (lambda (i) (if (< i 2) i (+ (fib (- i 1)) (fib (- i 2))))))';
+var CODE = '(define fib\n  (lambda (i)\n    (if (< i 2) i\n      (+ (fib (- i 1))\n         (fib (- i 2))))))';
 //var CODE = '(define fib (lambda (i) (begin (pp (string-append "running with i = " (number->string i))) (if (< i 2) i (let ((first (fib (- i 1))) (second (fib (- i 2)))) (begin (pp (string-append "adding " (number->string first) " to " (number->string second))) (+ first second)))))))';
 
 function $(id) { return document.getElementById(id); }
