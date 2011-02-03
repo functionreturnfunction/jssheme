@@ -119,7 +119,7 @@ Interpreter = {
     },
 
     'let': function(list) {
-      var scope = new Scope();
+      var scope = list.scope || new Scope();
       var bindings = list.objectAt(1);
       list = list.subList(2, list.getLen());
       var cur, val;
@@ -141,7 +141,7 @@ Interpreter = {
     },
 
     'let*': function(list) {
-      var scope = new Scope();
+      var scope = list.scope || new Scope();
       var bindings = list.objectAt(1);
       list = list.subList(2, list.getLen());
       var cur, curVal;

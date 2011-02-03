@@ -14,7 +14,8 @@ test('`apply\' should apply cdr of argument list to car of argument list', funct
          p('(append \'(1 2 3) \'(4 5 6))'), 'Append appears broken.');
 });
 
-// meta test building:
+// WARNING: meta test building
+// test the mathFuncs using a uniform set of arguments
 for (var x in Interpreter.mathFuncs) {
   // '/' is a special case, see TODO file
   if (x == '/') {
@@ -272,6 +273,7 @@ test('`let\' should define local variables', function() {
   doesThrow(function(){p('foobar')}, 'Let form has leaked, or the variable foobar has been set by a test');
   doesThrow(function(){p('(let ((foo 1) (bar (+ 1 foo))) (+ foo bar))')},
 		        'Regular let form should not allow use of bindings created during its own evaluation.');
+  equals(1, p('(let ((a 1)) (let ((b 2)) a))'), 'Let form should not carry values from parent scope.');
 });
 
 test('`let*\' should define local variables in terms of other local variables', function() {
@@ -284,6 +286,7 @@ test('`let*\' should define local variables in terms of other local variables', 
   doesNotThrow(function(){p('(let* ((foo 1) (bar (+ 1 foo))) (+ foo bar))')},
 		           'Starred let form should allow use of bindings created during its own evaluation.');
   equals(3, p('(let* ((foo 1) (bar (+ 1 foo))) (+ foo bar))'), 'Let* call failed.');
+  equals(1, p('(let* ((a 1)) (let* ((b 2)) a))'), 'Let* form should not carry values from parent scope.');
 });
 
 test('`or\' should return true if any of its arguments evaluates to true, else false', function() {
