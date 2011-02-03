@@ -418,9 +418,16 @@ test('Recursive exponent function', function() {
   equals(81, p('(power 3 4)'), 'Recursive exponent function failed.');
 });
 
-test('Recursive fibonacci function', function() {
-  // basic form, doesn't work for some reason.
-//  p('(define fib (lambda (i) (if (< i 2) i (+ (fib (- i 1)) (fib (- i 2))))))');
+test('Recursive Fibonacci function without let form', function() {
+  p('(define fib (lambda (i) (if (< i 2) i (+ (fib (- i 1)) (fib (- i 2))))))');
+  equals(2, p('(fib 3)'), 'Recursive Fibonacci function failed.');
+  equals(55, p('(fib 10)'), 'Recursive Fibonacci function failed.');
+  equals(89, p('(fib 11)'), 'Recursive Fibonacci function failed.');
+  equals(144, p('(fib 12)'), 'Recursive Fibonacci function failed.');
+});
+
+// just here to prove that this works:
+test('Recursive Fibonacci function with let form', function() {
   p('(define fib (lambda (i) (if (< i 2) i (let ((first (fib (- i 1))) (second (fib (- i 2)))) (+ first second)))))');
   equals(2, p('(fib 3)'), 'Recursive Fibonacci function failed.');
   equals(55, p('(fib 10)'), 'Recursive Fibonacci function failed.');
@@ -462,7 +469,15 @@ test('Little Schemer rember function', function() {
   equals('()', p('(rember \'foo \'())'));
   equals('()', p('(rember \'foo \'(foo))'));
   equals('(bar)', p('(rember \'foo \'(bar))'));
-  equals('(bar)', p('(rember \'foo \'(foo bar))'));
+  equals('(bar foo bar)', p('(rember \'foo \'(foo bar foo bar))'));
+});
+
+test('Second, more recursive Little Schemer rember function', function() {
+  p('(define rember (lambda (a lat) (cond ((null? lat) lat) ((eq? a (car lat)) (rember a (cdr lat))) (else (cons (car lat) (rember a (cdr lat)))))))');
+  equals('()', p('(rember \'foo \'())'));
+  equals('()', p('(rember \'foo \'(foo))'));
+  equals('(bar)', p('(rember \'foo \'(bar))'));
+  equals('(bar bar)', p('(rember \'foo \'(foo bar foo bar))'));
 });
 
 module('Interpreter');
