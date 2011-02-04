@@ -168,6 +168,17 @@ test('`null?\' returns true if argument is the null list, else false', function(
      'Null check on argument which needs to be evaluated failed.');
 });
 
+test('`pair?\' returns true if argument is a non-null list, else false', function() {
+  ok(p('(pair? \'(foo))'),
+     'A list containing at least one element is a pair');
+  ok(p('(pair? \'(()))'),
+     'A list containing at least one element is a pair, even if that element is the null list');
+  ok(!p('(pair? \'())'), 'An empty (null) list is not a pair');
+  ok(!p('(pair? \'atom)'), 'An atom is not a pair');
+  ok(!p('(pair? 1)'), 'A number is not a pair');
+  ok(!p('(pair? "foo")'), 'A string is not a pair');
+});
+
 test('`number?\' return true if argument is a number, else false', function() {
   ok(p('(number? 1)'), 'Number type-check function failed.');
   ok(p('(number? (+ 1 2))'), 'Number type-check function failed.');
@@ -406,7 +417,7 @@ test('`string->number\' should throw an exception if given an invalid radix', fu
   }
 });
 
-module('Lambda Recursion');
+module('Little Schemer and Lambda Recursion');
 
 test('Recursive exponent function', function() {
   p('(define power (lambda (x y) (if (= 1 y) x (* x (power x (- y 1))))))');
@@ -478,6 +489,16 @@ test('Second, more recursive Little Schemer rember function', function() {
   equals('()', p('(rember \'foo \'(foo))'));
   equals('(bar)', p('(rember \'foo \'(bar))'));
   equals('(bar bar)', p('(rember \'foo \'(foo bar foo bar))'));
+});
+
+test('Little schemer atom? function', function() {
+  p('(define atom? (lambda (x) (and (not (pair? x)) (not (null? x)))))');
+  ok(p('(atom? \'Harry)'));
+  ok(p('(atom? 12.34)'))
+  ok(p('(atom? "foo")'))
+  ok(!p('(atom? \'(Harry))'));
+  ok(!p('(atom? \'(Harry had a heap of apples))'));
+  ok(!p('(atom? \'())'));
 });
 
 module('Interpreter');

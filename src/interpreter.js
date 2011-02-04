@@ -248,10 +248,12 @@ Interpreter = {
 
     'null?': FunctionCompiler.compileFunction(1, function(obj) {
       obj = obj.evaluate();
-      if (obj instanceof List) {
-        return obj.isNull();
-      }
-      return false;
+      return obj instanceof List ? obj.isNull() : false;
+    }),
+
+    'pair?': FunctionCompiler.compileFunction(1, function(obj) {
+      obj = obj.evaluate();
+      return obj instanceof List ? !obj.isNull() : false;
     }),
 
     'number?': FunctionCompiler.compileFunction(1, function(obj) {
