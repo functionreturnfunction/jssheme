@@ -84,11 +84,11 @@ Interpreter = {
         cur = list.objectAt(i);
         l = cur.objectAt(0);
         r = cur.objectAt(1);
-        l.scope = list.scope;
+        l.scope = list.scope ? list.scope.clone() : null;
         switch (true) {
           case l == 'else':
           case l.evaluate():
-            r.scope = list.scope;
+            r.scope = list.scope ? list.scope.clone() : null;
             return r.evaluate();
         }
       }
@@ -122,14 +122,14 @@ Interpreter = {
     },
 
     'let': function(list) {
-      var scope = list.scope || new Scope();
+      var scope = list.scope ? list.scope.clone() : new Scope();
       var bindings = list.objectAt(1);
       list = list.subList(2, list.getLen());
       var cur, val;
       for (var i = 0, len = bindings.getLen(); i < len; ++i) {
         cur = bindings.objectAt(i);
         val = cur.objectAt(1);
-        val.scope = list.scope;
+        val.scope = list.scope ? list.scope.clone() : null;
         scope.setValue(cur.objectAt(0), val.evaluate());
       }
       for (var i = 0, len = list.getLen(); i < len; ++i) {
@@ -144,7 +144,7 @@ Interpreter = {
     },
 
     'let*': function(list) {
-      var scope = list.scope || new Scope();
+      var scope = list.scope ? list.scope.clone() : new Scope();
       var bindings = list.objectAt(1);
       list = list.subList(2, list.getLen());
       var cur, curVal;
@@ -164,6 +164,10 @@ Interpreter = {
           cur.evaluate();
         }
       }
+    },
+
+    'not': function(list) {
+      return !list.objectAt(1).evaluate();
     },
 
     'or': function(list) {
@@ -215,9 +219,7 @@ Interpreter = {
     }),
 
     'car': FunctionCompiler.compileFunction(1, function(list) {
-      // list could be an atom representing a variable which stores a list
-      list = list instanceof List ? list : list.evaluate();
-      return list.objectAt(0);
+      return list.evaluate().objectAt(0);
     }),
 
     'cdr': FunctionCompiler.compileFunction(1, function(list) {

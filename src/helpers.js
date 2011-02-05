@@ -14,6 +14,10 @@ Scope.prototype.setValue = function(str, val) {
   return Scope._setValue(this._values, str, val);
 };
 
+Scope.prototype.clone = function() {
+  return Scope._clone(this);
+};
+
 /* Static Methods */
 Scope._setValue = function(values, str, val) {
   switch (true) {
@@ -27,6 +31,15 @@ Scope._setValue = function(values, str, val) {
       values[str] = val;
   }
   return str;
+};
+
+Scope._clone = function(scope) {
+  var values = {}, ret = new Scope();
+  for (var x in scope._values) {
+    values[x] = scope._values[x];
+  }
+  ret._values = values;
+  return ret;
 };
 
 /* Class FunctionCompiler */

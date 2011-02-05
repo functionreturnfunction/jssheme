@@ -115,6 +115,8 @@ test('`car\' should return the first element of a list', function() {
          p('(car \'((foo) (bar) (baz)))'), 'Car on list of lists broken.');
   equals('foo', p('(let ((l \'(foo bar))) (car l))'),
          'Car on variable set with let broken.');
+  equals('foo', p('(car (car \'((foo bar))))'),
+         'Car should evaluate its argument.');
 });
 
 test('`cdr\' should return everything but the first element of a list as a new list', function() {
@@ -213,6 +215,14 @@ test('`and\' returns true if all arguments evaluate to true, else false', functi
   ok(p('(and #t #t)'), 'Basic and form broken.');
   ok(!p('(and #t #f)'), 'Basic and form broken.');
   ok(!p('(and #t #t #t #f #t)'), 'Multi-argument and form broken.');
+});
+
+test('`not\' returns true if argument is false, else false', function() {
+  ok(!p('(not \'foo)'), 'An atom is truthy');
+  ok(!p('(not \'())'), 'An empty list is truthy');
+  ok(!p('(not \'(foo))'), 'Any list is truthy');
+  ok(!p('(not "foo")'), 'Any string truthy');
+  ok(p('(not #f)'));
 });
 
 test('`begin\' evaluates all of its arguments, returning the value from the last', function() {
@@ -417,7 +427,7 @@ test('`string->number\' should throw an exception if given an invalid radix', fu
   }
 });
 
-module('Little Schemer and Lambda Recursion');
+module('Lambda Recursion');
 
 test('Recursive exponent function', function() {
   p('(define power (lambda (x y) (if (= 1 y) x (* x (power x (- y 1))))))');
@@ -473,32 +483,6 @@ test('Recursive factorial function', function() {
   equals(6, p('(fac 3)'));
   equals(24, p('(fac 4)'));
   equals(120, p('(fac 5)'));
-});
-
-test('Little Schemer rember function', function() {
-  p('(define rember (lambda (a lat) (cond ((null? lat) lat) ((eq? a (car lat)) (cdr lat)) (else (cons (car lat) (rember a (cdr lat)))))))');
-  equals('()', p('(rember \'foo \'())'));
-  equals('()', p('(rember \'foo \'(foo))'));
-  equals('(bar)', p('(rember \'foo \'(bar))'));
-  equals('(bar foo bar)', p('(rember \'foo \'(foo bar foo bar))'));
-});
-
-test('Second, more recursive Little Schemer rember function', function() {
-  p('(define rember (lambda (a lat) (cond ((null? lat) lat) ((eq? a (car lat)) (rember a (cdr lat))) (else (cons (car lat) (rember a (cdr lat)))))))');
-  equals('()', p('(rember \'foo \'())'));
-  equals('()', p('(rember \'foo \'(foo))'));
-  equals('(bar)', p('(rember \'foo \'(bar))'));
-  equals('(bar bar)', p('(rember \'foo \'(foo bar foo bar))'));
-});
-
-test('Little schemer atom? function', function() {
-  p('(define atom? (lambda (x) (and (not (pair? x)) (not (null? x)))))');
-  ok(p('(atom? \'Harry)'));
-  ok(p('(atom? 12.34)'))
-  ok(p('(atom? "foo")'))
-  ok(!p('(atom? \'(Harry))'));
-  ok(!p('(atom? \'(Harry had a heap of apples))'));
-  ok(!p('(atom? \'())'));
 });
 
 module('Interpreter');

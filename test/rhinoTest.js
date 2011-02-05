@@ -15,5 +15,6 @@ load('./test/testHelpers.js');
 load('./test/unit/typesTest.js');
 load('./test/unit/helpersTest.js');
 load('./test/integration/schemeTest.js');
+load('./test/integration/littleSchemerTest.js');
 
 new QUnit.ConsolePrinter().print();
