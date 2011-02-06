@@ -1,7 +1,3 @@
-test('`insertR*\' function', function() {
-  p('(define insertR* (lambda (new old l) (cond ((null? l) l) ((atom? (car l)) (if (eq? old (car l)) (cons old (cons new (insertR* new old (cdr l)))) (cons (car l) (insertR* new old (cdr l))))) (#t (cons (insertR* new old (car l)) (insertR* new old (cdr l)))))))');
-});
-
 test('`occur*\' function', function() {
   p('(define occur* (lambda (a l) (if (null? l) 0 (let ((first (car l)) (recur-rest (occur* a (cdr l)))) (if (atom? first) (if (eq? a first) (add1 recur-rest) recur-rest) (o+ (occur* a first) recur-rest))))))');
 });

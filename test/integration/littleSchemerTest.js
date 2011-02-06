@@ -235,4 +235,16 @@ test('`rember*\' function', function() {
   equals('()', p('(rember* \'foo \'(foo))'));
   equals('(bar)', p('(rember* \'foo \'(bar))'));
   equals('(bar bar)', p('(rember* \'foo \'(foo bar foo bar))'));
+  equals('((bar) (() bar))', p('(rember* \'foo \'((foo bar) ((foo) bar)))'));
+});
+
+test('`insertR*\' function', function() {
+  p('(define insertR* (lambda (new old l) (cond ((null? l) l) ((atom? (car l)) (if (eq? old (car l)) (cons old (cons new (insertR* new old (cdr l)))) (cons (car l) (insertR* new old (cdr l))))) (#t (cons (insertR* new old (car l)) (insertR* new old (cdr l)))))))');
+  equals('()', p('(insertR* \'foo \'bar \'())'));
+  equals('(bar foo)', p('(insertR* \'foo \'bar \'(bar))'));
+  equals('(foo bar foo)', p('(insertR* \'foo \'bar \'(foo bar))'));
+  equals('(foo bar foo foo bar foo)',
+         p('(insertR* \'foo \'bar \'(foo bar foo bar))'));
+  equals('((foo bar foo) ((foo) bar foo))',
+         p('(insertR* \'foo \'bar \'((foo bar) ((foo) bar)))'));
 });
