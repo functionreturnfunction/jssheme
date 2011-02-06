@@ -168,3 +168,40 @@ test('`olength\' function', function() {
   equals(3, p('(olength \'(a s d))'));
   equals(4, p('(olength \'(a s d f))'));
 });
+
+test('`pick\' function', function() {
+  p('(define pick (lambda (n lat) (cond ((zero? (sub1 n)) (car lat)) (#t (pick (sub1 n) (cdr lat))))))');
+  equals('a', p('(pick 1 \'(a s d f))'));
+  equals('s', p('(pick 2 \'(a s d f))'));
+  equals('d', p('(pick 3 \'(a s d f))'));
+  equals('f', p('(pick 4 \'(a s d f))'));
+});
+
+test('`rempick\' function', function() {
+  p('(define rempick (lambda (n lat) (cond ((zero? (sub1 n)) (cdr lat)) (#t (cons (car lat) (rempick (sub1 n) (cdr lat)))))))');
+  equals('(s d f)', p('(rempick 1 \'(a s d f))'));
+  equals('(a d f)', p('(rempick 2 \'(a s d f))'));
+  equals('(a s f)', p('(rempick 3 \'(a s d f))'));
+  equals('(a s d)', p('(rempick 4 \'(a s d f))'));
+});
+
+test('`no-nums\' function', function() {
+  p('(define no-nums (lambda (lat) (cond ((null? lat) lat) ((number? (car lat)) (no-nums (cdr lat))) (#t (cons (car lat) (no-nums (cdr lat)))))))');
+  equals('()', p('(no-nums \'(1))'));
+  equals('(a s d f)', p('(no-nums \'(1 a 2 s 3 d 4 f))'));
+});
+
+test('`all-nums\' function', function() {
+  p('(define all-nums (lambda (lat) (cond ((null? lat) lat) ((number? (car lat)) (cons (car lat) (all-nums (cdr lat)))) (#t (all-nums (cdr lat))))))');
+  equals('()', p('(all-nums \'(a))'));
+  equals('(1 2 3 4)', p('(all-nums \'(1 a 2 s 3 d 4 f))'));
+});
+
+test('`eqan?\' function', function() {
+  p('(define eqan? (lambda (a1 a2) (cond ((and (number? a1) (number? a2)) (o= a1 a2)) ((or (number? a1) (number? a2)) #f) (#t (eq? a1 a2)))))');
+  ok(p('(eqan? 1 1)'), 'Numbers with the same value are equal.');
+  ok(p('(eqan? \'a \'a)'), 'Atoms with the same value are equal.');
+  ok(!p('(eqan? 1 2)'), 'Numbers with different values are not equal.');
+  ok(!p('(eqan? \'a \'b)'), 'Atoms with different values are not equal.');
+  ok(!p('(eqan? 1 \'a)'), 'Numeric atoms are not equal to alphabetical atoms.');
+});

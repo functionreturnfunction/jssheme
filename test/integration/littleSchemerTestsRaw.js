@@ -1,25 +1,5 @@
-test('`pick\' function', function() {
-  p('(define pick (lambda (n lat) (cond ((zero? (sub1 n)) (car lat)) (#t (pick (sub1 n) (cdr lat))))))');
-});
-
-test('`rempick\' function', function() {
-  p('(define rempick (lambda (n lat) (cond ((zero? (sub1 n)) (cdr lat)) (#t (cons (car lat) (rempick (sub1 n) (cdr lat)))))))');
-});
-
-test('`no-nums\' function', function() {
-  p('(define no-nums (lambda (lat) (cond ((null? lat) lat) ((number? (car lat)) (no-nums (cdr lat))) (#t (cons (car lat) (no-nums (cdr lat)))))))');
-});
-
-test('`all-nums\' function', function() {
-  p('(define all-nums (lambda (lat) (cond ((null? lat) lat) ((number? (car lat)) (cons (car lat) (all-nums (cdr lat)))) (#t (all-nums (cdr lat))))))');
-});
-
-test('`eqan?\' function', function() {
-  p('(define eqan? (lambda (a1 a2) (cond ((and (number? a1) (number? a2)) (o= a1 a2)) ((or (number? a1) (number? a2)) #f) (#t (eq? a1 a2)))))');
-});
-
-test('`(\' function', function()defi {
-  p('ne occur (lambda (a lat) (cond ((null? lat) 0) ((eqan? a (car lat)) (add1 (occur a (cdr lat)))) (#t (occur a (cdr lat))))))');
+test('`occur\' function', function() {
+  p('(define occur (lambda (a lat) (cond ((null? lat) 0) ((eqan? a (car lat)) (add1 (occur a (cdr lat)))) (#t (occur a (cdr lat))))))');
 });
 
 test('`one?\' function', function() {
