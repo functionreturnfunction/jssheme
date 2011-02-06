@@ -1,4 +1,4 @@
-module('Little Schemer')
+module('Little Schemer Functions');
 
 test('atom? function', function() {
   p('(define atom? (lambda (a) (and (not (pair? a)) (not (null? a)))))');
@@ -108,4 +108,63 @@ test('`o-\' function', function() {
   p('(define o- (lambda (n m) (cond ((zero? m) n) (#t (sub1 (o- n (sub1 m)))))))');
   equals(0, p('(o- 1 1)'));
   equals(2, p('(o- 4 2)'));
+});
+
+test('`addtup\' function', function() {
+  p('(define addtup (lambda (tup) (cond ((null? tup) 0) (#t (o+ (addtup (cdr tup)) (car tup))))))');
+  equals(16, p('(addtup \'(1 2 3 4))'));
+});
+
+test('`o*\' function', function() {
+  p('(define o* (lambda (n m) (cond ((zero? m) m) (#t (o+ n (o* n (sub1 m)))))))');
+  equals(4, p('(o* 2 2)'));
+  equals(16, p('(o* 4 4)'));
+});
+
+test('`tup+\' function', function() {
+  p('(define tup+ (lambda (tup1 tup2) (cond ((null? tup1) tup2) ((null? tup2) tup1) (#t (cons (o+ (car tup1) (car tup2)) (tup+ (cdr tup1) (cdr tup2)))))))');
+  equals('(2 2 2 2)', p('(tup+ \'(1 1 1 1) \'(1 1 1 1))'));
+  equals('(2 2 2 1)', p('(tup+ \'(1 1 1 1) \'(1 1 1))'));
+  equals('(2 2 2 1)', p('(tup+ \'(1 1 1) \'(1 1 1 1))'));
+});
+
+test('`o>\' function', function() {
+  p('(define o> (lambda (n m) (cond ((zero? n) #f) ((zero? m) #t) (#t (o> (sub1 n) (sub1 m))))))');
+  ok(p('(o> 2 1)'));
+  ok(!p('(o> 1 2)'));
+});
+
+test('`o<\' function', function() {
+  p('(define o< (lambda (n m) (cond ((zero? m) #f) ((zero? n) #t) (#t (o< (sub1 n) (sub1 m))))))');
+  ok(!p('(o< 2 1)'));
+  ok(p('(o< 1 2)'));
+});
+
+test('`o=\' function', function() {
+  p('(define o= (lambda (n m) (and (not (o< n m)) (not (o> n m)))))');
+  ok(p('(o= 1 1)'));
+  ok(p('(o= 0 0)'));
+  ok(!p('(o= 1 0)'));
+  ok(!p('(o= 0 1)'));
+});
+
+test('`power\' function', function() {
+  p('(define power (lambda (n m) (cond ((zero? m) 1) (#t (o* n (power n (sub1 m)))))))');
+  equals(4, p('(power 2 2)'));
+  equals(8, p('(power 2 3)'));
+});
+
+test('`o/\' function', function() {
+  p('(define o/ (lambda (n m) (cond ((o< n m) 0) (#t (add1 (o/ (o- n m) m))))))');
+  equals(1, p('(o/ 2 2)'));
+  equals(2, p('(o/ 4 2)'));
+  equals(3, p('(o/ 9 3)'));
+});
+
+test('`olength\' function', function() {
+  p('(define olength (lambda (lat) (cond ((null? lat) 0) (#t (add1 (olength (cdr lat)))))))');
+  equals(1, p('(olength \'(a))'));
+  equals(2, p('(olength \'(a s))'));
+  equals(3, p('(olength \'(a s d))'));
+  equals(4, p('(olength \'(a s d f))'));
 });
