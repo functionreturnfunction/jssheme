@@ -253,18 +253,22 @@ Interpreter = {
       return obj instanceof List ? obj.isNull() : false;
     }),
 
-    'pair?': FunctionCompiler.compileFunction(1, function(obj) {
-      obj = obj.evaluate();
-      return obj instanceof List ? !obj.isNull() : false;
-    }),
-
     'number?': FunctionCompiler.compileFunction(1, function(obj) {
       obj = obj.evaluate();
       return (typeof(obj) == 'number');
     }),
 
+    'pair?': FunctionCompiler.compileFunction(1, function(obj) {
+      obj = obj.evaluate();
+      return obj instanceof List ? !obj.isNull() : false;
+    }),
+
     'pp': FunctionCompiler.compileFunction(1, function(obj) {
       Interpreter.print(obj.evaluate());
+    }),
+
+    'zero?': FunctionCompiler.compileFunction(1, function(obj) {
+      return obj.evaluate() == 0;
     })
   },
 

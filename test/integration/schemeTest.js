@@ -202,6 +202,12 @@ test('`pp\' should print the given string through the interpreter and return not
   Interpreter.print = oldPrint;
 });
 
+test('`zero?\' should return true if given argument is 0, else false', function() {
+  ok(p('(zero? 0)'));
+  ok(!p('(zero? -1)'));
+  ok(!p('(zero? 1)'));
+});
+
 module('Scheme Constants');
 
 test('Truth constants', function() {
