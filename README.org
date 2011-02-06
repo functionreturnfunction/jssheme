@@ -44,3 +44,9 @@
   Tests can also be run from the command line using the Rake task 'test:rhino'.
   Mozilla Rhino must be installed and available from the current $PATH.  Node.js
   support is underway, but not working yet.
+
+* SPOILER ALERT!
+  The integration test script "littleSchemerTest.js" contains implementations of
+  the examples in the Little Schemer, to ensure that those examples actually
+  work in this implementation.  It is highly recommended that you not open this
+  file directly if you're working through the book.
