@@ -1,7 +1,3 @@
-test('`occur*\' function', function() {
-  p('(define occur* (lambda (a l) (if (null? l) 0 (let ((first (car l)) (recur-rest (occur* a (cdr l)))) (if (atom? first) (if (eq? a first) (add1 recur-rest) recur-rest) (o+ (occur* a first) recur-rest))))))');
-});
-
 test('`subst*\' function', function() {
   p('(define subst* (lambda (new old l) (cond ((null? l) l) ((atom? (car l)) (if (eq? old (car l)) (cons new (subst* new old (cdr l))) (cons (car l) (subst* new old (cdr l))))) (#t (cons (subst* new old (car l)) (subst* new old (cdr l)))))))');
 });
@@ -18,8 +14,8 @@ test('`leftmost\' function', function() {
   p('(define leftmost (lambda (l) (cond ((null? l) l) ((atom? (car l)) (car l)) (#t (leftmost (car l))))))');
 });
 
-test('`(d)\' function', function()efine eqlist? (lambda (l1 l2) (cond ((null? l1) (null? l2)) ((null? l2) #f) ((and (atom? (car l1)) (atom? ( {
-  p('car l2))) (if (eqan? (car l1) (car l2)) (eqlist? (cdr l1) (cdr l2)) #f)) (#t (and (eqlist? (car l1) (car l2)) (eqlist? (cdr l1) (cdr l2)))))))');
+test('`eqlist?\' function', function() {
+  p('(define eqlist? (lambda (l1 l2) (cond ((null? l1) (null? l2)) ((null? l2) #f) ((and (atom? (car l1)) (atom? (car l2))) (if (eqan? (car l1) (car l2)) (eqlist? (cdr l1) (cdr l2)) #f)) (#t (and (eqlist? (car l1) (car l2)) (eqlist? (cdr l1) (cdr l2)))))))');
 });
 
 test('`equal?\' function', function() {

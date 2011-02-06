@@ -248,3 +248,11 @@ test('`insertR*\' function', function() {
   equals('((foo bar foo) ((foo) bar foo))',
          p('(insertR* \'foo \'bar \'((foo bar) ((foo) bar)))'));
 });
+
+test('`occur*\' function', function() {
+  p('(define occur* (lambda (a l) (if (null? l) 0 (let ((first (car l)) (recur-rest (occur* a (cdr l)))) (if (atom? first) (if (eq? a first) (add1 recur-rest) recur-rest) (o+ (occur* a first) recur-rest))))))');
+  equals(0, p('(occur* \'bar \'(foo foo foo))'));
+  equals(1, p('(occur* \'bar \'(foo foo (bar)))'));
+  equals(2, p('(occur* \'bar \'(foo (bar (bar))))'));
+  equals(3, p('(occur* \'bar \'(bar (bar (bar))))'));
+});
