@@ -222,10 +222,10 @@ Interpreter = {
       return list.evaluate().objectAt(0);
     }),
 
-    'cdr': FunctionCompiler.compileFunction(1, function(list) {
-      // list could be an atom representing a variable which stores a list
-      list = list instanceof List ? list : list.evaluate();
-      return list.subList(1, list.getLen());
+    'cdr': FunctionCompiler.compileFunction(1, function(obj) {
+      // obj could be an atom representing a variable which stores a list
+      obj = obj instanceof List ? obj : obj.evaluate();
+      return obj.subList(1, obj.getLen());
     }),
 
     'cons': FunctionCompiler.compileFunction(2, function(a, list) {
