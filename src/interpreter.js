@@ -259,7 +259,7 @@ Interpreter = {
 
     'number?': FunctionCompiler.compileFunction(1, function(obj) {
       obj = obj.evaluate();
-      return (typeof(obj) == 'number');
+      return !isNaN(obj.toString());
     }),
 
     'pair?': FunctionCompiler.compileFunction(1, function(obj) {

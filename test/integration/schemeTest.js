@@ -193,6 +193,8 @@ test('`number?\' return true if argument is a number, else false', function() {
   ok(p('(number? 1)'), 'Number type-check function failed.');
   ok(p('(number? (+ 1 2))'), 'Number type-check function failed.');
   ok(!p('(number? +)'), 'Number type-check function failed.');
+  ok(p('(number? (car \'(1)))'), 'Number type-check function failed.');
+  ok(!p('(number? (car \'(foo)))', 'Number type-check function falied.'));
 });
 
 test('`pp\' should print the given string through the interpreter and return nothing', function() {

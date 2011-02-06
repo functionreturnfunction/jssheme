@@ -21,12 +21,12 @@ Scope.prototype.clone = function() {
 Scope.prototype.toString = function() {
   var sb = ['{'], val;
   for (var x in this._values) {
-    sb.push('\"' + x + '\":');
+    sb.push('\"' + x + '\": ');
     val = this.getValue(x);
     sb.push(val.constructor === String ? '\"' + val + '\"' : val.toString());
     sb.push(',');
   }
-  return sb.join('') + '}';
+  return (sb.length > 1 ? sb.slice(0, sb.length - 1) : sb).join('') + '}';
 };
 
 /* Static Methods */
