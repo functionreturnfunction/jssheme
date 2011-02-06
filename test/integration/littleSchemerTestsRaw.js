@@ -1,19 +1,3 @@
-test('`occur\' function', function() {
-  p('(define occur (lambda (a lat) (cond ((null? lat) 0) ((eqan? a (car lat)) (add1 (occur a (cdr lat)))) (#t (occur a (cdr lat))))))');
-});
-
-test('`one?\' function', function() {
-  p('(define one? (lambda (n) (= 1 n)))');
-});
-
-test('`rempick\' function', function() {
-  p('(define rempick (lambda (n lat) (cond ((one? n) (cdr lat)) (#t (cons (car lat) (rempick (sub1 n) (cdr lat)))))))');
-});
-
-test('`rember*\' function', function() {
-  p('(define rember* (lambda (a l) (cond ((null? l) l) ((list? (car l)) (cons (rember* a (car l)) (rember* a (cdr l)))) ((eqan? a (car l)) (rember* a (cdr l))) (#t (cons (car l) (rember* a (cdr l)))))))');
-});
-
 test('`insertR*\' function', function() {
   p('(define insertR* (lambda (new old l) (cond ((null? l) l) ((atom? (car l)) (if (eq? old (car l)) (cons old (cons new (insertR* new old (cdr l)))) (cons (car l) (insertR* new old (cdr l))))) (#t (cons (insertR* new old (car l)) (insertR* new old (cdr l)))))))');
 });

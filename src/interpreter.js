@@ -248,6 +248,10 @@ Interpreter = {
       }
     }),
 
+    'list?': FunctionCompiler.compileFunction(1, function(obj) {
+      return obj.evaluate() instanceof List;
+    }),
+
     'null?': FunctionCompiler.compileFunction(1, function(obj) {
       obj = obj.evaluate();
       return obj instanceof List ? obj.isNull() : false;

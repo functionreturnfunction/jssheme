@@ -205,3 +205,34 @@ test('`eqan?\' function', function() {
   ok(!p('(eqan? \'a \'b)'), 'Atoms with different values are not equal.');
   ok(!p('(eqan? 1 \'a)'), 'Numeric atoms are not equal to alphabetical atoms.');
 });
+
+test('`occur\' function', function() {
+  p('(define occur (lambda (a lat) (cond ((null? lat) 0) ((eqan? a (car lat)) (add1 (occur a (cdr lat)))) (#t (occur a (cdr lat))))))');
+  equals(0, p('(occur \'bar \'(foo foo foo))'));
+  equals(1, p('(occur \'bar \'(foo foo bar))'));
+  equals(2, p('(occur \'bar \'(foo bar bar))'));
+  equals(3, p('(occur \'bar \'(bar bar bar))'));
+});
+
+test('`one?\' function', function() {
+  p('(define one? (lambda (n) (= 1 n)))');
+  ok(p('(one? 1)'));
+  ok(!p('(one? 0)'));
+  ok(!p('(one? 2)'));
+});
+
+test('`rempick\' function (refactored)', function() {
+  p('(define rempick (lambda (n lat) (cond ((one? n) (cdr lat)) (#t (cons (car lat) (rempick (sub1 n) (cdr lat)))))))');
+  equals('(s d f)', p('(rempick 1 \'(a s d f))'));
+  equals('(a d f)', p('(rempick 2 \'(a s d f))'));
+  equals('(a s f)', p('(rempick 3 \'(a s d f))'));
+  equals('(a s d)', p('(rempick 4 \'(a s d f))'));
+});
+
+test('`rember*\' function', function() {
+  p('(define rember* (lambda (a l) (cond ((null? l) l) ((list? (car l)) (cons (rember* a (car l)) (rember* a (cdr l)))) ((eqan? a (car l)) (rember* a (cdr l))) (#t (cons (car l) (rember* a (cdr l)))))))');
+  equals('()', p('(rember* \'foo \'())'));
+  equals('()', p('(rember* \'foo \'(foo))'));
+  equals('(bar)', p('(rember* \'foo \'(bar))'));
+  equals('(bar bar)', p('(rember* \'foo \'(foo bar foo bar))'));
+});

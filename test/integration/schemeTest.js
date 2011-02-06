@@ -157,6 +157,14 @@ test('`eq?\' returns true if arguments are equal, else false', function() {
   ok(p('(eq? a (car \'(foo)))'), 'Equality function is broken');
 });
 
+test('`list?\' returns true if argument is a list, else false', function() {
+  ok(p('(list? \'())'));
+  ok(p('(list? \'(a s d f))'));
+  ok(!p('(list? \'a)'));
+  ok(!p('(list? 1)'));
+  ok(!p('(list? "foo")'));
+});
+
 test('`null?\' returns true if argument is the null list, else false', function() {
   ok(p('(null? \'())'), 'Null check function or null list seems to be broken.');
   ok(!p('(null? \'(1))'), 'Null check function failed.');
