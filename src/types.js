@@ -32,7 +32,7 @@ List.prototype.appendList = function(list) {
 
 List.prototype.subList = function(from, to) {
   return new List(this.level + 1, this._arr.slice(from, to), this.quoted,
-                  this.scope);
+                  this.scope ? this.scope.clone() : null);
 };
 
 List.prototype.getLen = function() {
@@ -59,7 +59,7 @@ List.prototype.objectAt = function(i) {
 List._copyAndEvalArr = function(arr, scope) {
   var ret = arr[0], curItem;
   if (ret.constructor == List) {
-    ret.scope = scope;
+    ret.scope = scope ? scope.clone() : null;
   } else {
     ret = new Atom(ret, false, scope);
   }
@@ -70,7 +70,7 @@ List._copyAndEvalArr = function(arr, scope) {
     // test this vs. dynamically appending
     // using i
     if (curItem.constructor == List) {
-      curItem.scope = scope;
+      curItem.scope = scope ? scope.clone() : null;
     }
     ret.push(curItem);
   }
@@ -107,7 +107,7 @@ List._objectAt = function(arr, i, scope) {
     case obj instanceof List:
       return obj;
     default:
-      return new Atom(obj, false, scope);
+      return new Atom(obj, false, scope ? scope.clone() : null);
   }
 };
 
@@ -115,7 +115,7 @@ List._objectAt = function(arr, i, scope) {
 var Atom = function(val, quoted, scope) {
   this._val = val;
   this.quoted = quoted || false;
-  this.scope = scope;
+  this.scope = scope ? scope.clone() : null;
 
   return true;
 };

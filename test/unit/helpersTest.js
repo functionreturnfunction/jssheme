@@ -16,4 +16,5 @@ test('#clone() should return a copy of itself with the same values', function() 
   equals(clone.getValue('foo'), this.target.getValue('foo'));
   equals(clone.getValue('foobar'), this.target.getValue('foobar'));
   ok(clone !== this.target);
+  same(Scope, clone.constructor);
 });

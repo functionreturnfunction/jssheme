@@ -187,7 +187,7 @@ Interpreter = {
           val.quoted = true;
           return val;
         default:
-          return new Atom(val, true, list.scope);
+          return new Atom(val, true, list.scope ? list.scope.clone() : null);
       }
     },
 

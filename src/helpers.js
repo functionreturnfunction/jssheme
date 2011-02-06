@@ -18,6 +18,17 @@ Scope.prototype.clone = function() {
   return Scope._clone(this);
 };
 
+Scope.prototype.toString = function() {
+  var sb = ['{'], val;
+  for (var x in this._values) {
+    sb.push('\"' + x + '\":');
+    val = this.getValue(x);
+    sb.push(val.constructor === String ? '\"' + val + '\"' : val.toString());
+    sb.push(',');
+  }
+  return sb.join('') + '}';
+};
+
 /* Static Methods */
 Scope._setValue = function(values, str, val) {
   switch (true) {
