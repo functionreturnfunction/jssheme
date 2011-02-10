@@ -64,9 +64,11 @@ FunctionCompiler = function(argc, fn) {
 FunctionCompiler.prototype.compile = function() {
   var fn = this.fn, argc = this.argc;
   return function(list) {
-    var args = [];
+    var args = [], cur;
     for (var i = 1; i <= argc; ++i) {
-      args.push(list.objectAt(i));
+      cur = list.objectAt(i);
+      cur.scope = list.scope ? list.scope.clone() : null;
+      args.push(cur);
     }
     return fn.apply(list, args);
   };

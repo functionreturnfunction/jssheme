@@ -70,7 +70,7 @@ Interpreter.specialForms = {
     var body = list.objectAt(2);
     var argc = argList.getLen();
     return FunctionCompiler.compileFunction(argc, function() {
-      body.scope = new Scope();
+      body.scope = this.scope ? this.scope.clone() : new Scope();
       for (var i = 0; i < argc; ++i) {
         var name = argList.objectAt(i).toString(), value = arguments[i].evaluate();
         body.scope.setValue(name, value);

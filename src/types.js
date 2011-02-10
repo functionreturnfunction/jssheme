@@ -66,9 +66,6 @@ List._copyAndEvalArr = function(arr, scope) {
   ret = [ret.evaluate()];
   for (var i = 1, len = arr.length; i < len; ++i) {
     curItem = arr[i];
-    // TODO:
-    // test this vs. dynamically appending
-    // using i
     if (curItem.constructor == List) {
       curItem.scope = scope ? scope.clone() : null;
     }

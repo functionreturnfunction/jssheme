@@ -104,8 +104,7 @@ Interpreter = {
     ret = ret instanceof Atom ? ret.evaluate() : ret;
     for (var i = 2, len = list.getLen(); i < len; ++i) {
       var left = ret;
-      var right = list.objectAt(i);
-      right = right.evaluate();
+      var right = list.objectAt(i).evaluate();
       right = right instanceof Atom ? right.evaluate() : right;
       ret = fn(left, right);
     }

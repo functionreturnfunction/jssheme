@@ -135,7 +135,7 @@ test('Recursive exponent function', function() {
 });
 
 test('Recursive Fibonacci function without let form', function() {
-  p('(define fib (lambda (i) (if (< i 2) i (+ (fib (- i 1)) (fib (- i 2))))))');
+  p('(define fib (lambda (i) (if (< i 2) i (+ (fib (- i 2)) (fib (- i 1))))))');
   equals(2, p('(fib 3)'), 'Recursive Fibonacci function failed.');
   equals(55, p('(fib 10)'), 'Recursive Fibonacci function failed.');
   equals(89, p('(fib 11)'), 'Recursive Fibonacci function failed.');
