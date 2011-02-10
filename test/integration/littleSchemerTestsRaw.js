@@ -1,15 +1,3 @@
-test('`subst*\' function', function() {
-  p('(define subst* (lambda (new old l) (cond ((null? l) l) ((atom? (car l)) (if (eq? old (car l)) (cons new (subst* new old (cdr l))) (cons (car l) (subst* new old (cdr l))))) (#t (cons (subst* new old (car l)) (subst* new old (cdr l)))))))');
-});
-
-test('`insertL*\' function', function() {
-  p('(define insertL* (lambda (new old l) (cond ((null? l) l) ((atom? (car l)) (if (eq? old (car l)) (cons new (cons old (insertL* new old (cdr l)))) (cons (car l) (insertL* new old (cdr l))))) (#t (cons (insertL* new old (car l)) (insertL* new old (cdr l)))))))');
-});
-
-test('`member*\' function', function() {
-  p('(define member* (lambda (a l) (cond ((null? l) #f) ((atom? (car l)) (if (eq? a (car l)) #t (member a (cdr l)))) (#t (or (member* a (car l)) (member* a (cdr l)))))))');
-});
-
 test('`leftmost\' function', function() {
   p('(define leftmost (lambda (l) (cond ((null? l) l) ((atom? (car l)) (car l)) (#t (leftmost (car l))))))');
 });

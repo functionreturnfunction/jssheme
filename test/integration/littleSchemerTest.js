@@ -255,4 +255,36 @@ test('`occur*\' function', function() {
   equals(1, p('(occur* \'bar \'(foo foo (bar)))'));
   equals(2, p('(occur* \'bar \'(foo (bar (bar))))'));
   equals(3, p('(occur* \'bar \'(bar (bar (bar))))'));
+  equals(4, p('(occur* \'bar \'(bar (bar (bar) bar)))'));
+});
+
+test('`subst*\' function', function() {
+  p('(define subst* (lambda (new old l) (cond ((null? l) l) ((atom? (car l)) (if (eq? old (car l)) (cons new (subst* new old (cdr l))) (cons (car l) (subst* new old (cdr l))))) (#t (cons (subst* new old (car l)) (subst* new old (cdr l)))))))');
+  equals('(baz)',
+         p('(subst* \'foo \'bar \'(baz))'));
+  equals('(foo foo (foo))',
+         p('(subst* \'foo \'bar \'(bar bar (bar)))'));
+  equals('((foo foo) ((foo) foo) foo)',
+         p('(subst* \'foo \'bar \'((foo bar) ((foo) bar) bar))'));
+});
+
+test('`insertL*\' function', function() {
+  p('(define insertL* (lambda (new old l) (cond ((null? l) l) ((atom? (car l)) (if (eq? old (car l)) (cons new (cons old (insertL* new old (cdr l)))) (cons (car l) (insertL* new old (cdr l))))) (#t (cons (insertL* new old (car l)) (insertL* new old (cdr l)))))))');
+  equals('()', p('(insertL* \'foo \'bar \'())'));
+  equals('(foo bar)', p('(insertL* \'foo \'bar \'(bar))'));
+  equals('(foo foo bar)', p('(insertL* \'foo \'bar \'(foo bar))'));
+  equals('(foo foo bar foo foo bar)',
+         p('(insertL* \'foo \'bar \'(foo bar foo bar))'));
+  equals('((foo foo bar) ((foo) foo bar) foo bar)',
+         p('(insertL* \'foo \'bar \'((foo bar) ((foo) bar) bar))'));
+});
+
+test('`member*\' function', function() {
+  p('(define member* (lambda (a l) (cond ((null? l) #f) ((atom? (car l)) (if (eq? a (car l)) #t (member* a (cdr l)))) (#t (or (member* a (car l)) (member* a (cdr l)))))))');
+  ok(!p('(member* \'foo \'())'));
+  ok(p('(member* \'foo \'(foo))'));
+  ok(!p('(member* \'foo \'(bar))'));
+  ok(p('(member* \'foo \'(foo bar foo bar))'));
+  ok(p('(member* \'foo \'(bar bar (foo) bar))'));
+  ok(!p('(member* \'foo \'(bar bar (bar) bar))'));
 });
