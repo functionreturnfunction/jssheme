@@ -23,7 +23,8 @@ Interpreter.primitives = {
   }),
 
   'cons': FunctionCompiler.compileFunction(2, function(a, list) {
-    return list.evaluate().prepend(a.evaluate());
+    a = a.evaluate();
+    return list.evaluate().prepend(a);
   }),
 
   'eq?': FunctionCompiler.compileFunction(2, function(l, r) {
