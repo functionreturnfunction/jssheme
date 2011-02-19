@@ -17,8 +17,7 @@ Interpreter.primitives = {
   }),
 
   'cdr': FunctionCompiler.compileFunction(1, function(obj) {
-    // obj could be an atom representing a variable which stores a list
-    obj = obj instanceof List ? obj : obj.evaluate();
+    obj = obj.evaluate();
     return obj.subList(1, obj.getLen());
   }),
 
