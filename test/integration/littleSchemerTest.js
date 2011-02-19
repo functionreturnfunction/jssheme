@@ -288,3 +288,17 @@ test('`member*\' function', function() {
   ok(p('(member* \'foo \'(bar bar (foo) bar))'));
   ok(!p('(member* \'foo \'(bar bar (bar) bar))'));
 });
+
+test('`leftmost\' function', function() {
+  p('(define leftmost (lambda (l) (cond ((null? l) l) ((atom? (car l)) (car l)) (#t (leftmost (car l))))))');
+  equals('potato', p('(leftmost \'((potato) (chips ((with) fish) (chips))))'));
+  equals('hot', p('(leftmost \'(((hot) (tuna (and))) cheese))'));
+});
+
+test('`eqlist?\' function', function() {
+  p('(define eqlist? (lambda (l1 l2) (cond ((null? l1) (null? l2)) ((null? l2) #f) ((and (atom? (car l1)) (atom? (car l2))) (if (eqan? (car l1) (car l2)) (eqlist? (cdr l1) (cdr l2)) #f)) (#t (and (eqlist? (car l1) (car l2)) (eqlist? (cdr l1) (cdr l2)))))))');
+  ok(!p('(eqlist? \'(strawberry ice cream) \'(strawberry cream ice))'));
+  ok(!p('(eqlist? \'(banana ((split))) \'((banana) (split)))'));
+  ok(!p('(eqlist? \'(beef ((sausage)) (and (soda))) \'(beef ((salami)) (and (soda))))'));
+  ok(p('(eqlist? \'(beef ((sausage)) (and (soda))) \'(beef ((sausage)) (and (soda))))'));
+});
