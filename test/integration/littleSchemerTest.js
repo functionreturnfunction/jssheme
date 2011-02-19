@@ -296,7 +296,7 @@ test('`leftmost\' function, page 88', function() {
 });
 
 test('`eqlist?\' function, page 92', function() {
-  p('(define eqlist? (lambda (l1 l2) (cond ((null? l1) (null? l2)) ((null? l2) #f) ((and (atom? (car l1)) (atom? (car l2))) (if (eqan? (car l1) (car l2)) (eqlist? (cdr l1) (cdr l2)) #f)) (#t (and (eqlist? (car l1) (car l2)) (eqlist? (cdr l1) (cdr l2)))))))');
+  p('(define eqlist? (lambda (l1 l2) (cond ((null? l1) (null? l2)) ((null? l2) #f) ((and (atom? (car l1)) (atom? (car l2))) (if (eqan? (car l1) (car l2)) (eqlist? (cdr l1) (cdr l2)) #f)) ((or (atom? (car l1)) (atom? (car l2))) #f) (#t (and (eqlist? (car l1) (car l2)) (eqlist? (cdr l1) (cdr l2)))))))');
   ok(!p('(eqlist? \'(strawberry ice cream) \'(strawberry cream ice))'));
   ok(!p('(eqlist? \'(banana ((split))) \'((banana) (split)))'));
   ok(!p('(eqlist? \'(beef ((sausage)) (and (soda))) \'(beef ((salami)) (and (soda))))'));
